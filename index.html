@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Nutrition Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js"></script>
+<style>
+  :root{
+    --brand:#059669; --brand-2:#10b981; --brand-dark:#047857; --brand-soft:#e7f6ef;
+    --ink:#0f221b; --muted:#5b6f67; --bg:#f5f9f7; --line:#e7ede9; --card:#ffffff;
+  }
+  *{ -webkit-tap-highlight-color:transparent; }
+  body{ background:var(--bg); color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:90px; }
+  ::selection{ background:#bdebd5; }
+  .feather{ width:1em; height:1em; vertical-align:-0.135em; stroke-width:2; }
+  .seg-nav .feather{ width:1.05em; height:1.05em; }
+  .bottom-nav .feather{ width:22px; height:22px; }
+  .stat-ic .feather{ width:1.15em; height:1.15em; }
+  .empty-state .feather{ width:1em; height:1em; }
+  .app-header{ background:linear-gradient(125deg,#047857 0%,#10b981 62%,#34d399 100%);
+    box-shadow:0 6px 24px rgba(5,150,105,.25); }
+  .app-header .logo{ width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.18);
+    display:grid;place-items:center;font-size:1.05rem;backdrop-filter:blur(6px); }
+  .brand-title{ font-weight:800; letter-spacing:-.5px; font-size:1.18rem; }
+  .seg-nav{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:5px;
+    box-shadow:0 2px 8px rgba(0,0,0,.04); display:inline-flex; gap:4px; }
+  .seg-nav button{ border:none; background:transparent; color:var(--muted); font-weight:600;
+    font-size:.9rem; border-radius:11px; padding:9px 18px; display:flex; align-items:center;
+    gap:7px; transition:.18s; }
+  .seg-nav button:hover{ color:var(--brand-dark); background:var(--brand-soft); }
+  .seg-nav button.active{ background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff; box-shadow:0 4px 12px rgba(5,150,105,.32); }
+  .bottom-nav{ position:fixed; left:12px; right:12px; bottom:12px; z-index:1030;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(14px); border:1px solid var(--line);
+    border-radius:20px; box-shadow:0 8px 28px rgba(0,0,0,.12); display:flex; padding:7px; }
+  .bottom-nav button{ flex:1; border:none; background:transparent; color:var(--muted);
+    font-size:.68rem; font-weight:600; display:flex; flex-direction:column; align-items:center;
+    gap:3px; padding:7px 2px; border-radius:14px; transition:.18s; }
+  .bottom-nav button.active{ color:#fff; background:linear-gradient(135deg,var(--brand),var(--brand-2)); }
+  .card{ border:1px solid var(--line); border-radius:18px; background:var(--card);
+    box-shadow:0 4px 18px rgba(15,34,27,.04); }
+  h6{ font-weight:700; letter-spacing:-.2px; }
+  .stat-card{ position:relative; overflow:hidden; }
+  .stat-ic{ width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    font-size:1.15rem; margin-bottom:10px; }
+  .stat-card .num{ font-size:2rem; font-weight:800; line-height:1; letter-spacing:-1px; }
+  .stat-card .lbl{ font-size:.74rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:.4px; color:var(--muted); margin-top:3px; }
+  .btn-brand{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff;
+    border:none; font-weight:600; box-shadow:0 4px 12px rgba(5,150,105,.28); }
+  .btn-brand:hover{ color:#fff; filter:brightness(1.05); }
+  .btn{ border-radius:12px; font-weight:600; }
+  .form-control,.form-select{ border-radius:12px; border-color:var(--line); }
+  .form-control:focus,.form-select:focus{ border-color:var(--brand-2);
+    box-shadow:0 0 0 .2rem rgba(16,185,129,.18); }
+  .input-icon{ position:relative; }
+  .input-icon .feather{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted); width:1.05em; height:1.05em; }
+  .input-icon input{ padding-left:40px; }
+  .cat-badge{ font-size:.68rem; font-weight:600; padding:3px 9px; border-radius:20px; }
+  .food-chip{ display:inline-flex; align-items:center; gap:5px; background:#f3f7f5; color:#243a31;
+    border-radius:9px; padding:3px 8px; font-size:.74rem; font-weight:500; margin:2px;
+    max-width:100%; border-left:3px solid var(--brand); }
+  .food-chip .x{ cursor:pointer; opacity:.45; font-size:1rem; line-height:.7; }
+  .food-chip .x:hover{ opacity:1; color:#dc2626; }
+  .table-wrap{ overflow-x:auto; border-radius:18px; }
+  .planner-table{ border-collapse:separate; border-spacing:0; margin:0; }
+  .planner-table th,.planner-table td{ border-bottom:1px solid var(--line);
+    border-right:1px solid var(--line); vertical-align:top; min-width:158px; }
+  .planner-table thead th{ background:#063f30; color:#fff; position:sticky; top:0; z-index:3;
+    font-size:.82rem; font-weight:600; padding:11px 10px; }
+  .planner-table .slot-col{ position:sticky; left:0; background:#f3f7f5; z-index:2;
+    min-width:120px; font-weight:700; font-size:.82rem; }
+  .planner-table thead .slot-col{ z-index:4; background:#04372a; }
+  .planner-cell{ padding:8px; }
+  .add-food-btn{ font-size:.72rem; padding:3px 10px; border-radius:9px; font-weight:600; }
+  .totals-row td{ background:#fafdfb; font-size:.72rem; color:var(--muted); }
+  .totals-row .slot-col{ background:#eef4f1; color:var(--ink); }
+  .progress{ height:9px; border-radius:8px; background:#e9efec; }
+  .progress-bar{ background:linear-gradient(90deg,var(--brand),var(--brand-2)); border-radius:8px; }
+  .check-item{ display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line);
+    border-radius:14px; margin-bottom:8px; background:#fff; transition:.16s; }
+  .check-item:hover{ border-color:#cfe6da; }
+  .check-item.done{ background:var(--brand-soft); border-color:#bfe6d2; }
+  .check-item.done .ci-name{ text-decoration:line-through; opacity:.55; }
+  .check-item .form-check-input{ width:1.3em;height:1.3em; cursor:pointer; }
+  .check-item .form-check-input:checked{ background-color:var(--brand); border-color:var(--brand); }
+  .slot-head{ font-weight:700; color:var(--brand-dark); margin:18px 0 8px;
+    display:flex; align-items:center; gap:8px; font-size:.95rem; }
+  .slot-head .t{ font-size:.72rem; color:var(--muted); font-weight:500;
+    background:#eef4f1; padding:2px 8px; border-radius:20px; }
+  .micro-note{ font-size:.7rem; color:var(--muted); }
+  .empty-state{ text-align:center; color:var(--muted); padding:48px 16px; }
+  .empty-state .ic{ font-size:2.6rem; opacity:.4; }
+  .cov-row{ margin-bottom:9px; font-size:.82rem; }
+  .cov-row .cov-meta{ color:var(--muted); }
+  .target-table td{ padding:.3rem .25rem; font-size:.85rem; }
+  ::-webkit-scrollbar{ height:8px; width:8px; }
+  ::-webkit-scrollbar-thumb{ background:#cdd9d3; border-radius:8px; }
+  .modal-content{ border:none; border-radius:18px; }
+  .print-only{ display:none; }
+  @media print{
+    @page{ margin:12mm; }
+    body{ padding:0!important; background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .app-header,.seg-nav,.bottom-nav,.modal,.modal-backdrop,.btn,.no-print{ display:none!important; }
+    .tab-pane.d-none{ display:none!important; }
+    .print-only{ display:block!important; }
+    #printHeader{ margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid var(--brand); }
+    #printHeader .pt{ font-size:1.3rem; font-weight:800; color:var(--brand-dark); }
+    #printHeader .ps{ color:#555; font-size:.85rem; }
+    .card{ box-shadow:none!important; border:1px solid #d4ddd8!important; break-inside:avoid; }
+    .table-wrap{ overflow:visible!important; }
+    .planner-table{ font-size:.6rem; }
+    .planner-table th,.planner-table td{ min-width:0!important; padding:3px!important; }
+    .planner-table .slot-col,.planner-table thead th{ position:static!important; }
+    .food-chip{ font-size:.58rem; margin:1px; }
+    canvas{ max-width:100%!important; }
+  }
+  @media (max-width:576px){ .stat-card .num{ font-size:1.6rem; } }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="container-fluid px-3 py-2 d-flex align-items-center justify-content-between" style="max-width:1200px;margin:auto;">
+    <div class="d-flex align-items-center gap-2 text-white">
+      <span class="logo"><i data-feather="clipboard"></i></span>
+      <span class="brand-title">Nutrition Planner</span>
+    </div>
+    <span class="text-white-50 small d-none d-sm-flex align-items-center gap-1"><i data-feather="cloud"></i> Saved on this device</span>
+  </div>
+</header>
+
+<div class="container-fluid px-3 mt-3 mt-md-4" style="max-width:1200px;">
+  <div id="printHeader" class="print-only"><div class="pt">Nutrition Planner</div><div class="ps" id="printSub"></div></div>
+  <div class="text-center mb-4 d-none d-md-block">
+    <div class="seg-nav">
+      <button class="active" data-tab="dashboard"><i data-feather="pie-chart"></i>Dashboard</button>
+      <button data-tab="library"><i data-feather="grid"></i>Food Library</button>
+      <button data-tab="planner"><i data-feather="calendar"></i>Weekly Planner</button>
+      <button data-tab="tracker"><i data-feather="check-square"></i>Daily Tracker</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+      <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="pie-chart" style="color:var(--brand)"></i>Dashboard Overview</h6>
+      <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" onclick="printNow('Dashboard')"><i data-feather="printer"></i>Print</button>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-lg-3"><div class="card stat-card p-3 h-100">
+        <div class="stat-ic" style="background:#e0f2eb;color:#059669"><i data-feather="calendar"></i></div>
+        <div class="num" id="st-planned">0</div><div class="lbl">Planned this week</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card stat-card p-3 h-100">
+        <div class="stat-ic" style="background:#dcfce7;color:#16a34a"><i data-feather="check-circle"></i></div>
+        <div class="num text-success" id="st-completed">0</div><div class="lbl">Completed</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card stat-card p-3 h-100">
+        <div class="stat-ic" style="background:#fee2e2;color:#ef4444"><i data-feather="x-circle"></i></div>
+        <div class="num text-danger" id="st-missed">0</div><div class="lbl">Missed</div></div></div>
+      <div class="col-6 col-lg-3"><div class="card stat-card p-3 h-100">
+        <div class="stat-ic" style="background:#ccfbf1;color:#0d9488"><i data-feather="target"></i></div>
+        <div class="num" style="color:var(--brand)" id="st-adherence">0%</div><div class="lbl">Weekly adherence</div></div></div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-lg-6"><div class="card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="bar-chart-2" style="color:var(--brand)"></i>This Week's Adherence</h6>
+          <span class="badge rounded-pill d-inline-flex align-items-center gap-1" style="background:var(--brand-soft);color:var(--brand-dark)"><i data-feather="award"></i>Best: <span id="st-bestday">—</span></span></div>
+        <canvas id="weekChart" height="150"></canvas></div></div>
+      <div class="col-lg-6"><div class="card p-3 h-100">
+        <h6 class="mb-2 d-flex align-items-center gap-1"><i data-feather="trending-up" style="color:var(--brand)"></i>Last 30 Days Trend</h6>
+        <canvas id="monthChart" height="150"></canvas></div></div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6"><div class="card p-3 d-flex flex-row align-items-center gap-3">
+        <div class="stat-ic mb-0" style="background:#fff1e6;color:#fb7536;width:54px;height:54px;font-size:1.6rem"><i data-feather="zap"></i></div>
+        <div><div class="num h2 mb-0" id="st-streak">0</div><div class="text-muted small">day streak — all meals done</div></div></div></div>
+      <div class="col-md-6"><div class="card p-3">
+        <h6 class="mb-2 d-flex align-items-center gap-1"><i data-feather="heart" style="color:var(--brand)"></i>Consistency</h6>
+        <div class="d-flex justify-content-between small text-muted"><span>Days fully completed this week</span><span id="st-fulldays">0 / 7</span></div>
+        <div class="progress mt-1"><div class="progress-bar" id="st-fullbar" style="width:0%"></div></div></div></div>
+    </div>
+  </div>
+
+  <!-- FOOD LIBRARY -->
+  <div id="tab-library" class="tab-pane d-none">
+    <div class="card mb-3">
+      <button class="btn text-start w-100 p-3 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#targetsCollapse">
+        <span class="fw-bold d-flex align-items-center gap-2"><i data-feather="target" style="color:var(--brand)"></i>Daily Nutrient Targets</span>
+        <i data-feather="chevron-down"></i>
+      </button>
+      <div class="collapse" id="targetsCollapse"><div class="px-3 pb-3" id="targetsBody"></div></div>
+    </div>
+    <div class="card p-3 mb-3">
+      <div class="row g-2 align-items-center">
+        <div class="col-12 col-md"><div class="input-icon"><i data-feather="search"></i><input type="text" class="form-control" id="libSearch" placeholder="Search foods..."></div></div>
+        <div class="col-7 col-md-auto"><select class="form-select" id="libFilter"><option value="">All categories</option></select></div>
+        <div class="col-5 col-md-auto d-grid"><button class="btn btn-brand d-flex align-items-center justify-content-center gap-1" id="addFoodBtn"><i data-feather="plus-circle"></i>Add Food</button></div>
+      </div>
+      <div class="mt-2 small text-muted">New here? <a href="#" id="seedBtn" class="fw-semibold" style="color:var(--brand)">Load sample foods</a> to get started in seconds.</div>
+    </div>
+    <div class="table-wrap card">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light"><tr>
+          <th>Food</th><th>Category</th><th class="text-end">Cal</th><th class="text-end">Protein</th>
+          <th class="text-end">Carbs</th><th class="text-end">Fat</th><th class="text-end">Fiber</th><th></th>
+        </tr></thead>
+        <tbody id="libBody"></tbody>
+      </table>
+    </div>
+    <div id="libEmpty" class="empty-state d-none"><div class="ic"><i data-feather="inbox"></i></div><div class="mt-2">Your food library is empty.</div></div>
+  </div>
+
+  <!-- WEEKLY PLANNER -->
+  <div id="tab-planner" class="tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+      <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="calendar" style="color:var(--brand)"></i>Weekly Meal Plan <span class="text-muted fw-normal small">(recurring template)</span></h6>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" onclick="printNow('Weekly Planner')"><i data-feather="printer"></i>Print</button>
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" id="editSlotsBtn"><i data-feather="clock"></i>Edit meal times</button>
+      </div>
+    </div>
+    <div class="table-wrap card mb-2">
+      <table class="table mb-0 planner-table" id="plannerTable"></table>
+    </div>
+    <div class="small text-muted d-flex align-items-center gap-1 flex-wrap"><i data-feather="info"></i>Tap <span class="badge bg-light text-dark">+ add</span> in any cell to pick foods. Open the Daily Tracker to see how a day covers your nutrient targets.</div>
+  </div>
+
+  <!-- DAILY TRACKER -->
+  <div id="tab-tracker" class="tab-pane d-none">
+    <div class="card p-3 mb-3">
+      <div class="row g-2 align-items-center">
+        <div class="col-auto"><label class="col-form-label fw-semibold d-flex align-items-center gap-1"><i data-feather="calendar" style="color:var(--brand)"></i>Date</label></div>
+        <div class="col-auto"><input type="date" class="form-control" id="trackDate"></div>
+        <div class="col text-end d-flex justify-content-end align-items-center gap-2"><button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 no-print" onclick="printNow('Daily Tracker')"><i data-feather="printer"></i>Print</button><span class="badge fs-6 rounded-pill" id="trackPct" style="background:linear-gradient(135deg,var(--brand),var(--brand-2))">0%</span></div>
+      </div>
+      <div class="progress mt-2"><div class="progress-bar" id="trackBar" style="width:0%"></div></div>
+      <div class="small text-muted mt-1" id="trackSummary"></div>
+    </div>
+
+    <div class="card p-3 mb-3" id="coverageCard">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="target" style="color:var(--brand)"></i>Daily Nutrition Coverage</h6>
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-outline-success active" id="covPlanned">Planned</button>
+          <button class="btn btn-outline-success" id="covEaten">Eaten</button>
+        </div>
+      </div>
+      <div id="coverageSummary" class="small text-muted mb-2"></div>
+      <div id="coverageList"></div>
+      <div class="small text-muted mt-1">Reference ranges for a typical adult — individual needs vary, so treat this as a guide rather than medical advice.</div>
+    </div>
+
+    <h6 class="mb-2 d-flex align-items-center gap-1"><i data-feather="check-square" style="color:var(--brand)"></i>Meal Checklist</h6>
+    <div id="trackList"></div>
+    <div id="trackEmpty" class="empty-state d-none"><div class="ic"><i data-feather="calendar"></i></div><div class="mt-2">No meals planned for this day.<br>Add some in the Weekly Planner.</div></div>
+  </div>
+</div>
+
+<!-- mobile bottom nav -->
+<nav class="bottom-nav d-md-none">
+  <button class="active" data-tab="dashboard"><i data-feather="pie-chart"></i><span>Dashboard</span></button>
+  <button data-tab="library"><i data-feather="grid"></i><span>Library</span></button>
+  <button data-tab="planner"><i data-feather="calendar"></i><span>Planner</span></button>
+  <button data-tab="tracker"><i data-feather="check-square"></i><span>Tracker</span></button>
+</nav>
+
+<!-- FOOD MODAL -->
+<div class="modal fade" id="foodModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2" id="foodModalTitle"><i data-feather="plus-circle" style="color:var(--brand)"></i>Add Food</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="fId">
+    <div class="row g-2">
+      <div class="col-md-8"><label class="form-label small fw-semibold">Name *</label><input class="form-control" id="fName" placeholder="e.g. Ragi Dosa"></div>
+      <div class="col-md-4"><label class="form-label small fw-semibold">Category</label>
+        <div class="input-group">
+          <select class="form-select" id="fCat"></select>
+          <button class="btn btn-outline-secondary" id="newCatBtn" type="button" title="New category"><i data-feather="plus"></i></button>
+        </div>
+      </div>
+    </div>
+    <label class="form-label small fw-bold mt-3 mb-1">Macros (per serving)</label>
+    <div class="row g-2" id="macroFields"></div>
+    <button class="btn btn-sm btn-light w-100 text-start mt-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#microCollapse">
+      <i data-feather="chevron-down"></i><span class="fw-semibold">Micronutrients (optional)</span>
+    </button>
+    <div class="collapse mt-2" id="microCollapse"><div class="row g-2" id="microFields"></div></div>
+    <div class="mt-3"><label class="form-label small fw-semibold">Notes</label><input class="form-control" id="fMicro" placeholder="e.g. good source of iron"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveFoodBtn"><i data-feather="check"></i>Save</button></div>
+</div></div></div>
+
+<!-- PICKER MODAL -->
+<div class="modal fade" id="pickerModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2"><i data-feather="plus-circle" style="color:var(--brand)"></i>Add to <span id="pickerSlotLabel"></span></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="input-icon mb-2"><i data-feather="search"></i><input class="form-control" id="pickerSearch" placeholder="Search library..."></div>
+    <div id="pickerList" style="max-height:50vh;overflow:auto;"></div>
+    <div id="pickerEmpty" class="text-muted small text-center py-3 d-none">No foods in library. Add some first.</div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-brand" data-bs-dismiss="modal">Done</button></div>
+</div></div></div>
+
+<!-- COPY DAY MODAL -->
+<div class="modal fade" id="copyModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2"><i data-feather="copy" style="color:var(--brand)"></i>Copy <span id="copySrcLabel"></span> to…</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><p class="small text-muted">Selected days will be overwritten with this day's meals.</p><div id="copyTargets" class="d-flex flex-wrap gap-3"></div></div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand" id="doCopyBtn">Copy</button></div>
+</div></div></div>
+
+<!-- SLOTS MODAL -->
+<div class="modal fade" id="slotsModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2"><i data-feather="clock" style="color:var(--brand)"></i>Edit Meal Times</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><div id="slotsEditor"></div><button class="btn btn-sm btn-outline-secondary mt-2 d-flex align-items-center gap-1" id="addSlotBtn"><i data-feather="plus"></i>Add meal slot</button></div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveSlotsBtn"><i data-feather="check"></i>Save</button></div>
+</div></div></div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal fade" id="confirmModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-body pt-4 d-flex gap-3 align-items-start"><span style="color:#ef4444;font-size:1.4rem"><i data-feather="alert-triangle"></i></span><span id="confirmMsg"></span></div>
+  <div class="modal-footer"><button class="btn btn-light" id="confirmNo">Cancel</button><button class="btn btn-danger d-flex align-items-center gap-1" id="confirmYes"><i data-feather="trash-2"></i>Delete</button></div>
+</div></div></div>
+
+<!-- PROMPT MODAL -->
+<div class="modal fade" id="promptModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="promptTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><input class="form-control" id="promptInput"></div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand" id="promptOk">OK</button></div>
+</div></div></div>
+
+<script>
+function fi(){ try{ feather.replace({ 'stroke-width':2 }); }catch(e){} }
+
+function printNow(label){
+  const d=document.getElementById('trackDate') ? document.getElementById('trackDate').value : '';
+  let sub=label;
+  if(label==='Daily Tracker' && d) sub=label+' — '+d;
+  document.getElementById('printSub').textContent = sub + ' · printed ' + new Date().toISOString().slice(0,10);
+  setTimeout(()=>window.print(), 120);
+}
+
+/* ---------- Nutrients & daily targets ---------- */
+const NUTRIENTS = [
+  {key:'cal',       label:'Calories',       unit:'kcal', grp:'macro', min:1600, max:2000},
+  {key:'pro',       label:'Protein',        unit:'g',    grp:'macro', min:60,   max:80},
+  {key:'carb',      label:'Carbs',          unit:'g',    grp:'macro'},
+  {key:'fat',       label:'Fat',            unit:'g',    grp:'macro'},
+  {key:'fib',       label:'Fiber',          unit:'g',    grp:'macro', min:25,   max:35},
+  {key:'water',     label:'Water',          unit:'ml',   grp:'micro', min:2000, max:2500, dispUnit:'L', dispDiv:1000},
+  {key:'calcium',   label:'Calcium',        unit:'mg',   grp:'micro', min:1200},
+  {key:'iron',      label:'Iron',           unit:'mg',   grp:'micro', min:8,    max:10},
+  {key:'magnesium', label:'Magnesium',      unit:'mg',   grp:'micro', min:320},
+  {key:'potassium', label:'Potassium',      unit:'mg',   grp:'micro', min:2600, max:3500},
+  {key:'zinc',      label:'Zinc',           unit:'mg',   grp:'micro', min:8,    max:10},
+  {key:'vitC',      label:'Vitamin C',      unit:'mg',   grp:'micro', min:75,   max:100},
+  {key:'folate',    label:'Folate (B9)',    unit:'mcg',  grp:'micro', min:400},
+  {key:'b12',       label:'Vitamin B12',    unit:'mcg',  grp:'micro', min:2.4},
+  {key:'vitD',      label:'Vitamin D',      unit:'IU',   grp:'micro', min:600,  max:800},
+  {key:'omega3',    label:'Omega-3 (ALA)',  unit:'g',    grp:'micro', min:1.1,  max:1.6},
+];
+function targetStr(n){
+  if(n.min==null) return '—';
+  const unit=n.dispUnit||n.unit, div=n.dispDiv||1;
+  const mn=+(n.min/div).toFixed(2), mx=n.max!=null?+(n.max/div).toFixed(2):null;
+  return (mx!=null?`${mn}–${mx}`:`${mn}`)+' '+unit;
+}
+
+/* ---------- Constants ---------- */
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const DEFAULT_SLOTS = [
+  {id:'s1',name:'Breakfast',time:'06:00'},
+  {id:'s2',name:'Snack',time:'08:00'},
+  {id:'s3',name:'Lunch',time:'13:00'},
+  {id:'s4',name:'Evening Snack',time:'16:00'},
+  {id:'s5',name:'Dinner',time:'20:00'},
+];
+const DEFAULT_CATS = ['Fruits','Vegetables','Millets','Pulses','Nuts','Dairy','Beverages','Grains','Other'];
+const CAT_COLORS = {
+  Fruits:'#f97316', Vegetables:'#22c55e', Millets:'#d97706', Pulses:'#ca8a04',
+  Nuts:'#92400e', Dairy:'#3b82f6', Beverages:'#06b6d4', Grains:'#a16207', Other:'#64748b'
+};
+const FALLBACK_COLORS=['#0ea5e9','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#ef4444','#6366f1','#84cc16'];
+function catColor(cat){
+  if(CAT_COLORS[cat]) return CAT_COLORS[cat];
+  let h=0; for(const ch of (cat||'x')) h=(h+ch.charCodeAt(0))%FALLBACK_COLORS.length;
+  return FALLBACK_COLORS[h];
+}
+function catBadge(cat){ const c=catColor(cat); return `<span class="cat-badge" style="color:${c};background:${c}1f">${esc(cat||'—')}</span>`; }
+const SAMPLE_FOODS = [
+  {name:'Banana',category:'Fruits',cal:105,pro:1.3,carb:27,fat:0.3,fib:3.1,water:90,potassium:422,magnesium:32,vitC:10,folate:24,micro:'Potassium, Vit B6'},
+  {name:'Ragi (Finger Millet)',category:'Millets',cal:119,pro:3.4,carb:25,fat:0.6,fib:3.6,calcium:104,iron:1.1,magnesium:41,potassium:122,folate:5,micro:'Calcium, Iron'},
+  {name:'Moong Dal',category:'Pulses',cal:105,pro:7,carb:19,fat:0.4,fib:8,iron:1.4,magnesium:48,potassium:266,zinc:0.8,folate:159,micro:'Folate, Magnesium'},
+  {name:'Almonds (10)',category:'Nuts',cal:70,pro:2.6,carb:2.4,fat:6,fib:1.5,calcium:35,magnesium:38,zinc:0.4,omega3:0.06,micro:'Vit E, Magnesium'},
+  {name:'Curd / Yogurt',category:'Dairy',cal:60,pro:3.5,carb:4.7,fat:3.3,fib:0,water:110,calcium:120,potassium:150,b12:0.4,micro:'Calcium, Probiotics'},
+  {name:'Spinach (cooked)',category:'Vegetables',cal:23,pro:2.9,carb:3.6,fat:0.4,fib:2.2,water:90,calcium:136,iron:3.6,magnesium:79,potassium:466,vitC:10,folate:146,micro:'Iron, Vit A, Vit K'},
+  {name:'Idli (2)',category:'Grains',cal:78,pro:2,carb:17,fat:0.2,fib:0.9,iron:0.5,folate:10,micro:'—'},
+  {name:'Green Tea',category:'Beverages',cal:2,pro:0,carb:0,fat:0,fib:0,water:200,micro:'Antioxidants'},
+  {name:'Water (1 glass)',category:'Beverages',cal:0,water:250,micro:'Hydration'},
+];
+
+/* ---------- IndexedDB ---------- */
+let db;
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open('nutritionPlannerDB',1);
+    req.onupgradeneeded = e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('foods')) d.createObjectStore('foods',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('mealPlan')){ const s=d.createObjectStore('mealPlan',{keyPath:'id',autoIncrement:true}); s.createIndex('day','day'); }
+      if(!d.objectStoreNames.contains('tracking')) d.createObjectStore('tracking',{keyPath:'key'});
+      if(!d.objectStoreNames.contains('meta')) d.createObjectStore('meta',{keyPath:'key'});
+    };
+    req.onsuccess=e=>{ db=e.target.result; resolve(); };
+    req.onerror=e=>reject(e.target.error);
+  });
+}
+const store=(n,m='readonly')=>db.transaction(n,m).objectStore(n);
+const idbAll=n=>new Promise((res,rej)=>{const r=store(n).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const idbGet=(n,k)=>new Promise((res,rej)=>{const r=store(n).get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const idbPut=(n,v)=>new Promise((res,rej)=>{const r=store(n,'readwrite').put(v);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});
+const idbDel=(n,k)=>new Promise((res,rej)=>{const r=store(n,'readwrite').delete(k);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});
+
+/* ---------- State ---------- */
+let foods=[], plan=[], slots=[], cats=[];
+let coverageMode='planned';
+async function loadState(){
+  foods = await idbAll('foods');
+  plan  = await idbAll('mealPlan');
+  const sMeta = await idbGet('meta','slots'); slots = sMeta ? sMeta.value : DEFAULT_SLOTS.slice();
+  const cMeta = await idbGet('meta','cats');  cats  = cMeta ? cMeta.value : DEFAULT_CATS.slice();
+}
+const saveSlots=()=>idbPut('meta',{key:'slots',value:slots});
+const saveCats =()=>idbPut('meta',{key:'cats',value:cats});
+
+/* ---------- Helpers ---------- */
+const todayISO=()=>new Date().toISOString().slice(0,10);
+function isoToWeekday(iso){ const d=new Date(iso+'T00:00'); return (d.getDay()+6)%7; }
+function weekdayName(iso){ return DAYS[isoToWeekday(iso)]; }
+function mondayOf(iso){ const d=new Date(iso+'T00:00'); const diff=(d.getDay()+6)%7; d.setDate(d.getDate()-diff); return d.toISOString().slice(0,10); }
+function addDays(iso,n){ const d=new Date(iso+'T00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function foodById(id){ return foods.find(f=>f.id===id); }
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const trackKey=(date,planId)=>`${date}__${planId}`;
+async function setTracked(date,planId,done){
+  const key=trackKey(date,planId);
+  if(done) await idbPut('tracking',{key,date,planId,done:true}); else await idbDel('tracking',key);
+}
+async function getDayTracking(date){
+  const all=await idbAll('tracking');
+  return new Set(all.filter(t=>t.date===date&&t.done).map(t=>t.planId));
+}
+async function adherenceForDate(date){
+  const wd=weekdayName(date);
+  const items=plan.filter(p=>p.day===wd);
+  if(items.length===0) return {total:0,done:0,pct:null};
+  const tracked=await getDayTracking(date);
+  const done=items.filter(p=>tracked.has(p.id)).length;
+  return {total:items.length,done,pct:Math.round(done/items.length*100)};
+}
+function sumNutrients(items){
+  const t={}; NUTRIENTS.forEach(n=>t[n.key]=0);
+  items.forEach(p=>{ const f=foodById(p.foodId); if(f) NUTRIENTS.forEach(n=>{ t[n.key]+=+f[n.key]||0; }); });
+  return t;
+}
+
+/* ---------- In-app confirm / prompt ---------- */
+const _confirmModal=new bootstrap.Modal('#confirmModal');
+function uiConfirm(msg,okLabel='Delete'){
+  return new Promise(res=>{
+    document.getElementById('confirmMsg').textContent=msg;
+    const yes=document.getElementById('confirmYes'), no=document.getElementById('confirmNo');
+    yes.innerHTML='<i data-feather="trash-2"></i>'+okLabel;
+    yes.onclick=()=>{ _confirmModal.hide(); res(true); };
+    no.onclick=()=>{ _confirmModal.hide(); res(false); };
+    _confirmModal.show(); fi();
+  });
+}
+const _promptModal=new bootstrap.Modal('#promptModal');
+function uiPrompt(title,val=''){
+  return new Promise(res=>{
+    document.getElementById('promptTitle').textContent=title;
+    const inp=document.getElementById('promptInput'); inp.value=val;
+    document.getElementById('promptOk').onclick=()=>{ _promptModal.hide(); res(inp.value); };
+    _promptModal.show();
+    setTimeout(()=>inp.focus(),300);
+  });
+}
+
+/* ---------- Tabs ---------- */
+function switchTab(tab){
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.add('d-none'));
+  document.getElementById('tab-'+tab).classList.remove('d-none');
+  if(tab==='dashboard') renderDashboard();
+  if(tab==='library') renderLibrary();
+  if(tab==='planner') renderPlanner();
+  if(tab==='tracker') renderTracker();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+/* ---------- Food modal: build nutrient inputs ---------- */
+function nutrientInput(n){
+  return `<div class="col-6 col-md-4 col-lg-3"><label class="form-label small fw-semibold mb-1">${n.label} <span class="text-muted">(${n.unit})</span></label>
+    <input type="number" class="form-control" id="f_${n.key}" min="0" step="any"></div>`;
+}
+function buildNutrientInputs(){
+  document.getElementById('macroFields').innerHTML=NUTRIENTS.filter(n=>n.grp==='macro').map(nutrientInput).join('');
+  document.getElementById('microFields').innerHTML=NUTRIENTS.filter(n=>n.grp==='micro').map(nutrientInput).join('');
+}
+
+/* ---------- Targets reference ---------- */
+function renderTargets(){
+  const rows=NUTRIENTS.filter(n=>n.min!=null).map(n=>
+    `<tr><td>${n.label}</td><td class="text-end fw-semibold">${targetStr(n)}</td></tr>`).join('');
+  document.getElementById('targetsBody').innerHTML=
+    `<table class="table table-sm target-table mb-0"><tbody>${rows}</tbody></table>`;
+}
+
+/* ---------- Food Library ---------- */
+const foodModal=new bootstrap.Modal('#foodModal');
+function fillCatSelect(sel,withAll){
+  sel.innerHTML=(withAll?'<option value="">All categories</option>':'')+cats.map(c=>`<option>${esc(c)}</option>`).join('');
+}
+function renderLibrary(){
+  fillCatSelect(document.getElementById('libFilter'),true);
+  const q=document.getElementById('libSearch').value.toLowerCase();
+  const cf=document.getElementById('libFilter').value;
+  let list=foods.filter(f=>(!q||f.name.toLowerCase().includes(q))&&(!cf||f.category===cf));
+  list.sort((a,b)=>a.name.localeCompare(b.name));
+  const body=document.getElementById('libBody');
+  document.getElementById('libEmpty').classList.toggle('d-none',foods.length>0);
+  body.innerHTML=list.map(f=>`<tr>
+    <td><strong>${esc(f.name)}</strong>${f.micro?`<div class="micro-note">${esc(f.micro)}</div>`:''}</td>
+    <td>${catBadge(f.category)}</td>
+    <td class="text-end">${f.cal||0}</td><td class="text-end">${f.pro||0}</td>
+    <td class="text-end">${f.carb||0}</td><td class="text-end">${f.fat||0}</td><td class="text-end">${f.fib||0}</td>
+    <td class="text-end text-nowrap">
+      <button class="btn btn-sm btn-link text-secondary p-1 editF" data-id="${f.id}"><i data-feather="edit-2"></i></button>
+      <button class="btn btn-sm btn-link text-danger p-1 delF" data-id="${f.id}"><i data-feather="trash-2"></i></button>
+    </td></tr>`).join('');
+  body.querySelectorAll('.editF').forEach(b=>b.onclick=()=>openFoodModal(+b.dataset.id));
+  body.querySelectorAll('.delF').forEach(b=>b.onclick=()=>deleteFood(+b.dataset.id));
+  fi();
+}
+document.getElementById('libSearch').oninput=renderLibrary;
+document.getElementById('libFilter').onchange=renderLibrary;
+document.getElementById('addFoodBtn').onclick=()=>openFoodModal(null);
+
+function openFoodModal(id){
+  fillCatSelect(document.getElementById('fCat'),false);
+  const f = id ? foodById(id) : null;
+  if(f){
+    document.getElementById('foodModalTitle').innerHTML='<i data-feather="edit-2" style="color:var(--brand)"></i>Edit Food';
+    fId.value=f.id; fName.value=f.name; fCat.value=f.category||cats[0]; fMicro.value=f.micro||'';
+    NUTRIENTS.forEach(n=>{ document.getElementById('f_'+n.key).value = (f[n.key]??''); });
+  }else{
+    document.getElementById('foodModalTitle').innerHTML='<i data-feather="plus-circle" style="color:var(--brand)"></i>Add Food';
+    fId.value=''; fName.value=''; fMicro.value=''; fCat.selectedIndex=0;
+    NUTRIENTS.forEach(n=>{ document.getElementById('f_'+n.key).value=''; });
+  }
+  foodModal.show(); fi();
+}
+document.getElementById('newCatBtn').onclick=async()=>{
+  let c=await uiPrompt('New category name'); if(!c||!c.trim()) return; c=c.trim();
+  if(!cats.includes(c)){ cats.push(c); saveCats(); }
+  fillCatSelect(document.getElementById('fCat'),false); document.getElementById('fCat').value=c;
+};
+document.getElementById('saveFoodBtn').onclick=async()=>{
+  const name=fName.value.trim(); if(!name){ fName.focus(); return; }
+  const obj={ name, category:fCat.value, micro:fMicro.value.trim() };
+  NUTRIENTS.forEach(n=>{ obj[n.key]=+document.getElementById('f_'+n.key).value||0; });
+  if(fId.value) obj.id=+fId.value;
+  await idbPut('foods',obj);
+  foods=await idbAll('foods'); foodModal.hide(); renderLibrary();
+};
+async function deleteFood(id){
+  if(!await uiConfirm('Delete this food? It will also be removed from any meal plans.')) return;
+  await idbDel('foods',id);
+  const refs=plan.filter(p=>p.foodId===id);
+  for(const r of refs) await idbDel('mealPlan',r.id);
+  foods=await idbAll('foods'); plan=await idbAll('mealPlan'); renderLibrary();
+}
+document.getElementById('seedBtn').onclick=async(e)=>{
+  e.preventDefault();
+  for(const s of SAMPLE_FOODS) await idbPut('foods',{...s});
+  foods=await idbAll('foods'); renderLibrary();
+};
+
+/* ---------- Weekly Planner ---------- */
+const pickerModal=new bootstrap.Modal('#pickerModal');
+const copyModal=new bootstrap.Modal('#copyModal');
+const slotsModal=new bootstrap.Modal('#slotsModal');
+let pickerCtx={day:null,slotId:null};
+let copySrc=null;
+function planItems(day,slotId){ return plan.filter(p=>p.day===day&&p.slotId===slotId); }
+function dayTotals(day){
+  const items=plan.filter(p=>p.day===day);
+  const t={cal:0,pro:0,carb:0,fat:0,fib:0};
+  items.forEach(p=>{ const f=foodById(p.foodId); if(f){ t.cal+=+f.cal||0; t.pro+=+f.pro||0; t.carb+=+f.carb||0; t.fat+=+f.fat||0; t.fib+=+f.fib||0; }});
+  return t;
+}
+function renderPlanner(){
+  const tbl=document.getElementById('plannerTable');
+  let head=`<thead><tr><th class="slot-col">Meal</th>`+DAYS.map(d=>
+    `<th class="text-center">${d} <button class="btn btn-sm btn-link text-white p-0 ms-1 copyDay" data-day="${d}" title="Copy this day"><i data-feather="copy"></i></button></th>`).join('')+`</tr></thead>`;
+  let rows=slots.map(s=>{
+    let cells=DAYS.map(d=>{
+      const items=planItems(d,s.id);
+      const chips=items.map(p=>{ const f=foodById(p.foodId);
+        return `<span class="food-chip" style="border-left-color:${catColor(f?f.category:'')}">${esc(f?f.name:'?')}<span class="x" data-pid="${p.id}">&times;</span></span>`; }).join('');
+      return `<td class="planner-cell">${chips}<div><button class="btn btn-sm btn-outline-success add-food-btn mt-1 addBtn" data-day="${d}" data-slot="${s.id}">+ add</button></div></td>`;
+    }).join('');
+    return `<tr><td class="slot-col">${esc(s.name)}<div class="text-muted fw-normal" style="font-size:.7rem">${esc(s.time)}</div></td>${cells}</tr>`;
+  }).join('');
+  tbl.innerHTML=head+'<tbody>'+rows+'</tbody>';
+  tbl.querySelectorAll('.addBtn').forEach(b=>b.onclick=()=>openPicker(b.dataset.day,b.dataset.slot));
+  tbl.querySelectorAll('.x').forEach(x=>x.onclick=async()=>{ await idbDel('mealPlan',+x.dataset.pid); plan=await idbAll('mealPlan'); renderPlanner(); });
+  tbl.querySelectorAll('.copyDay').forEach(b=>b.onclick=()=>openCopy(b.dataset.day));
+  fi();
+}
+function openPicker(day,slotId){
+  pickerCtx={day,slotId};
+  const slot=slots.find(s=>s.id===slotId);
+  document.getElementById('pickerSlotLabel').textContent=`${day} · ${slot.name}`;
+  document.getElementById('pickerSearch').value=''; renderPickerList(); pickerModal.show();
+}
+function renderPickerList(){
+  const q=document.getElementById('pickerSearch').value.toLowerCase();
+  const list=foods.filter(f=>!q||f.name.toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('pickerEmpty').classList.toggle('d-none',foods.length>0);
+  const existing=new Set(planItems(pickerCtx.day,pickerCtx.slotId).map(p=>p.foodId));
+  document.getElementById('pickerList').innerHTML=list.map(f=>{
+    const inn=existing.has(f.id);
+    return `<div class="d-flex justify-content-between align-items-center border-bottom py-2">
+      <div><strong>${esc(f.name)}</strong> ${catBadge(f.category)}
+        <div class="text-muted" style="font-size:.72rem">${f.cal||0} kcal · P${f.pro||0} C${f.carb||0} F${f.fat||0}</div></div>
+      <button class="btn btn-sm ${inn?'btn-success':'btn-outline-success'} pick" data-id="${f.id}" ${inn?'disabled':''}>${inn?'✓ Added':'Add'}</button>
+    </div>`;
+  }).join('');
+  document.getElementById('pickerList').querySelectorAll('.pick').forEach(b=>b.onclick=async()=>{
+    await idbPut('mealPlan',{day:pickerCtx.day,slotId:pickerCtx.slotId,foodId:+b.dataset.id});
+    plan=await idbAll('mealPlan'); renderPickerList(); renderPlanner();
+  });
+  fi();
+}
+document.getElementById('pickerSearch').oninput=renderPickerList;
+function openCopy(src){
+  copySrc=src;
+  document.getElementById('copySrcLabel').textContent=src;
+  document.getElementById('copyTargets').innerHTML=DAYS.filter(d=>d!==src).map(d=>
+    `<div class="form-check"><input class="form-check-input copyT" type="checkbox" value="${d}" id="ct-${d}"><label class="form-check-label" for="ct-${d}">${d}</label></div>`).join('');
+  copyModal.show();
+}
+document.getElementById('doCopyBtn').onclick=async()=>{
+  const targets=[...document.querySelectorAll('.copyT:checked')].map(c=>c.value);
+  const srcItems=plan.filter(p=>p.day===copySrc);
+  for(const t of targets){
+    for(const p of plan.filter(p=>p.day===t)) await idbDel('mealPlan',p.id);
+    for(const p of srcItems) await idbPut('mealPlan',{day:t,slotId:p.slotId,foodId:p.foodId});
+  }
+  plan=await idbAll('mealPlan'); copyModal.hide(); renderPlanner();
+};
+
+/* ---------- Slots editor ---------- */
+document.getElementById('editSlotsBtn').onclick=()=>{ renderSlotsEditor(slots.slice()); slotsModal.show(); };
+let editSlots=[];
+function renderSlotsEditor(arr){
+  editSlots=arr;
+  document.getElementById('slotsEditor').innerHTML=editSlots.map((s,i)=>`
+    <div class="d-flex gap-2 mb-2 align-items-center">
+      <input class="form-control form-control-sm slotName" data-i="${i}" value="${esc(s.name)}" placeholder="Meal name">
+      <input type="time" class="form-control form-control-sm slotTime" data-i="${i}" value="${s.time}" style="max-width:130px">
+      <button class="btn btn-sm btn-outline-danger delSlot" data-i="${i}"><i data-feather="trash-2"></i></button>
+    </div>`).join('');
+  document.querySelectorAll('.delSlot').forEach(b=>b.onclick=()=>{ editSlots.splice(+b.dataset.i,1); renderSlotsEditor(editSlots); });
+  fi();
+}
+document.getElementById('addSlotBtn').onclick=()=>{ editSlots.push({id:'s'+Date.now(),name:'New Meal',time:'12:00'}); renderSlotsEditor(editSlots); };
+document.getElementById('saveSlotsBtn').onclick=async()=>{
+  document.querySelectorAll('.slotName').forEach(inp=>editSlots[+inp.dataset.i].name=inp.value.trim()||'Meal');
+  document.querySelectorAll('.slotTime').forEach(inp=>editSlots[+inp.dataset.i].time=inp.value);
+  editSlots.sort((a,b)=>a.time.localeCompare(b.time));
+  slots=editSlots; await saveSlots(); slotsModal.hide(); renderPlanner();
+};
+
+/* ---------- Daily Tracker ---------- */
+document.getElementById('trackDate').value=todayISO();
+document.getElementById('trackDate').onchange=renderTracker;
+document.getElementById('covPlanned').onclick=()=>{ coverageMode='planned'; document.getElementById('covPlanned').classList.add('active'); document.getElementById('covEaten').classList.remove('active'); renderTracker(); };
+document.getElementById('covEaten').onclick=()=>{ coverageMode='eaten'; document.getElementById('covEaten').classList.add('active'); document.getElementById('covPlanned').classList.remove('active'); renderTracker(); };
+
+function renderCoverage(date, tracked){
+  const wd=weekdayName(date);
+  let items=plan.filter(p=>p.day===wd);
+  if(coverageMode==='eaten') items=items.filter(p=>tracked.has(p.id));
+  const totals=sumNutrients(items);
+  const targs=NUTRIENTS.filter(n=>n.min!=null);
+  let met=0;
+  const rows=targs.map(n=>{
+    const total=totals[n.key]||0;
+    const div=n.dispDiv||1, unit=n.dispUnit||n.unit;
+    const dt=total/div;
+    const dispTotal = (Number.isInteger(dt)?dt:dt.toFixed(1));
+    const covered=total>=n.min; if(covered) met++;
+    const over=n.max!=null && total>n.max;
+    const pct=Math.min(100, n.min? Math.round(total/n.min*100):0);
+    const color = covered ? (over?'#f59e0b':'var(--brand)') : (pct>=50?'#f59e0b':'#e2675f');
+    return `<div class="cov-row">
+      <div class="d-flex justify-content-between">
+        <span>${n.label}${covered?' <span style="color:var(--brand)">✓</span>':''}${over?' <span class="text-warning">(over)</span>':''}</span>
+        <span class="cov-meta">${dispTotal} / ${targetStr(n)}</span></div>
+      <div class="progress mt-1" style="height:6px"><div class="progress-bar" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('coverageList').innerHTML=rows;
+  document.getElementById('coverageSummary').textContent=
+    `${met} of ${targs.length} targets met · ${coverageMode==='eaten'?'from meals checked off':'from all planned meals'}`;
+}
+
+async function renderTracker(){
+  const date=document.getElementById('trackDate').value||todayISO();
+  const wd=weekdayName(date);
+  const tracked=await getDayTracking(date);
+  const list=document.getElementById('trackList');
+  const slotOrder=slots.map(s=>s.id);
+  const items=plan.filter(p=>p.day===wd).sort((a,b)=>slotOrder.indexOf(a.slotId)-slotOrder.indexOf(b.slotId));
+  document.getElementById('trackEmpty').classList.toggle('d-none',items.length>0);
+  let html=''; let lastSlot=null;
+  items.forEach(p=>{
+    const slot=slots.find(s=>s.id===p.slotId); const f=foodById(p.foodId);
+    if(slot.id!==lastSlot){ html+=`<div class="slot-head">${esc(slot.name)} <span class="t">${slot.time}</span></div>`; lastSlot=slot.id; }
+    const done=tracked.has(p.id);
+    html+=`<div class="check-item ${done?'done':''}">
+      <input class="form-check-input m-0 trk" type="checkbox" data-pid="${p.id}" ${done?'checked':''}>
+      <div class="flex-grow-1"><span class="ci-name">${esc(f?f.name:'?')}</span>
+        ${f?`<span class="text-muted small ms-2">${f.cal||0} kcal</span>`:''}</div>
+      ${f?catBadge(f.category):''}
+    </div>`;
+  });
+  list.innerHTML=html;
+  list.querySelectorAll('.trk').forEach(c=>c.onchange=async()=>{ await setTracked(date,+c.dataset.pid,c.checked); renderTracker(); });
+  const total=items.length, done=items.filter(p=>tracked.has(p.id)).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('trackPct').textContent=pct+'%';
+  document.getElementById('trackBar').style.width=pct+'%';
+  document.getElementById('trackSummary').textContent=total?`${done} of ${total} meals completed on ${wd}`:'';
+  renderCoverage(date, tracked);
+  fi();
+}
+
+/* ---------- Dashboard ---------- */
+let weekChart, monthChart;
+if(window.Chart){ Chart.defaults.font.family="'Inter',system-ui,sans-serif"; Chart.defaults.color='#5b6f67'; }
+async function renderDashboard(){
+  const today=todayISO(); const mon=mondayOf(today);
+  const weekDates=Array.from({length:7},(_,i)=>addDays(mon,i));
+  let planned=0,completed=0,fullDays=0; const weekPct=[];
+  for(let i=0;i<7;i++){
+    const a=await adherenceForDate(weekDates[i]);
+    planned+=a.total; completed+=a.done;
+    weekPct.push(a.pct===null?0:a.pct);
+    if(a.total>0&&a.done===a.total) fullDays++;
+  }
+  const missed=planned-completed;
+  const adh=planned?Math.round(completed/planned*100):0;
+  document.getElementById('st-planned').textContent=planned;
+  document.getElementById('st-completed').textContent=completed;
+  document.getElementById('st-missed').textContent=missed;
+  document.getElementById('st-adherence').textContent=adh+'%';
+  document.getElementById('st-fulldays').textContent=fullDays+' / 7';
+  document.getElementById('st-fullbar').style.width=Math.round(fullDays/7*100)+'%';
+  let best='—',bestv=-1;
+  weekPct.forEach((v,i)=>{ if(plan.some(p=>p.day===DAYS[i]) && v>bestv){ bestv=v; best=DAYS[i]; }});
+  document.getElementById('st-bestday').textContent=best+(bestv>=0?` (${bestv}%)`:'');
+  let streak=0;
+  for(let i=0;i<60;i++){
+    const d=addDays(today,-i); const a=await adherenceForDate(d);
+    if(a.total===0) continue;
+    if(a.done===a.total) streak++; else break;
+  }
+  document.getElementById('st-streak').textContent=streak;
+
+  if(weekChart) weekChart.destroy();
+  weekChart=new Chart(document.getElementById('weekChart'),{
+    type:'bar',
+    data:{labels:DAYS,datasets:[{label:'Adherence %',data:weekPct,
+      backgroundColor:weekPct.map(v=>v>=100?'#059669':v>=50?'#34d399':'#cdeada'),borderRadius:8,maxBarThickness:34}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:'#eef3f0'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false}}}}
+  });
+  const labels=[],data=[];
+  for(let i=29;i>=0;i--){ const d=addDays(today,-i); const a=await adherenceForDate(d); labels.push(d.slice(5)); data.push(a.pct===null?null:a.pct); }
+  if(monthChart) monthChart.destroy();
+  monthChart=new Chart(document.getElementById('monthChart'),{
+    type:'line',
+    data:{labels,datasets:[{label:'Adherence %',data,spanGaps:true,borderColor:'#059669',
+      backgroundColor:'rgba(5,150,105,.10)',fill:true,tension:.35,pointRadius:2,pointBackgroundColor:'#059669',borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:'#eef3f0'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false},ticks:{maxTicksLimit:8}}}}
+  });
+  fi();
+}
+
+/* ---------- Init ---------- */
+(async()=>{
+  buildNutrientInputs();
+  renderTargets();
+  fi();
+  try{ await openDB(); await loadState(); renderDashboard(); }
+  catch(e){ console.error(e);
+    document.body.insertAdjacentHTML('afterbegin','<div class="alert alert-danger m-3">Could not open local storage. If you are in a private window, data may not persist.</div>');
+  }
+  fi();
+})();
+</script>
+</body>
+</html>
