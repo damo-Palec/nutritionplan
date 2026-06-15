@@ -103,6 +103,32 @@
   .cov-row{ margin-bottom:9px; font-size:.82rem; }
   .cov-row .cov-meta{ color:var(--muted); }
   .target-table td{ padding:.3rem .25rem; font-size:.85rem; }
+  .metric-card .mc-val{ font-size:1.7rem; font-weight:800; letter-spacing:-.5px; line-height:1; }
+  .metric-card .mc-unit{ font-size:.78rem; color:var(--muted); font-weight:600; }
+  .metric-card .chg{ color:var(--muted); font-weight:700; font-size:.9rem; }
+  .chg-good{ color:#16a34a!important; } .chg-bad{ color:#ef4444!important; } .chg-flat{ color:var(--muted)!important; }
+  .st-pill{ font-size:.64rem; font-weight:700; padding:2px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:.4px; }
+  .st-ok{ background:#dcfce7; color:#16a34a; } .st-low{ background:#dbeafe; color:#2563eb; } .st-high{ background:#fee2e2; color:#ef4444; }
+  .med-check{ display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid var(--line); border-radius:12px; margin-bottom:7px; background:#fff; }
+  .med-check.done{ background:var(--brand-soft); border-color:#bfe6d2; }
+  .med-check.done .mc-name{ text-decoration:line-through; opacity:.55; }
+  .med-check .form-check-input{ width:1.3em; height:1.3em; cursor:pointer; }
+  .med-check .form-check-input:checked{ background-color:var(--brand); border-color:var(--brand); }
+  .med-slot-head{ font-weight:700; color:var(--brand-dark); font-size:.85rem; margin:12px 0 6px; }
+  .stock-low{ color:#ef4444!important; } .stock-ok{ color:#16a34a!important; }
+  .gl-row{ display:flex; align-items:center; gap:8px; padding:6px 9px; border:1px solid var(--line); border-radius:10px; font-size:.8rem; }
+  .gl-bar{ width:5px; height:26px; border-radius:4px; flex:0 0 auto; background:#cbd5d1; }
+  .gl-ok{ background:#16a34a; } .gl-high{ background:#ef4444; } .gl-low{ background:#3b82f6; } .gl-none{ background:#cbd5d1; }
+  .gl-name{ font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gl-val{ font-weight:700; white-space:nowrap; }
+  .gl-chip{ display:inline-block; font-size:.72rem; font-weight:600; padding:3px 10px; border-radius:20px; margin:2px 4px 2px 0; }
+  .gl-c-ok{ background:#dcfce7; color:#16a34a; } .gl-c-out{ background:#fee2e2; color:#ef4444; } .gl-c-no{ background:#eef2f0; color:#64748b; } .gl-c-due{ background:#fef3c7; color:#d97706; }
+  .gl-row2{ border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:.8rem; height:100%; }
+  .mc-meta{ font-size:.74rem; color:var(--muted); }
+  .mc-meta b{ color:var(--ink); font-weight:700; }
+  .due-ok{ color:#16a34a; } .due-soon{ color:#d97706; } .due-over{ color:#ef4444; }
+  .hist-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.76rem; padding:5px 0; border-bottom:1px solid var(--line); }
+  .hist-row:last-child{ border-bottom:none; }
   ::-webkit-scrollbar{ height:8px; width:8px; }
   ::-webkit-scrollbar-thumb{ background:#cdd9d3; border-radius:8px; }
   .modal-content{ border:none; border-radius:18px; }
@@ -147,6 +173,7 @@
       <button data-tab="library"><i data-feather="grid"></i>Food Library</button>
       <button data-tab="planner"><i data-feather="calendar"></i>Weekly Planner</button>
       <button data-tab="tracker"><i data-feather="check-square"></i>Daily Tracker</button>
+      <button data-tab="health"><i data-feather="activity"></i>Health</button>
     </div>
   </div>
 
@@ -264,6 +291,83 @@
     <div id="trackList"></div>
     <div id="trackEmpty" class="empty-state d-none"><div class="ic"><i data-feather="calendar"></i></div><div class="mt-2">No meals planned for this day.<br>Add some in the Weekly Planner.</div></div>
   </div>
+
+  <!-- HEALTH -->
+  <div id="tab-health" class="tab-pane d-none">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <div class="seg-nav" id="healthSub" style="box-shadow:none">
+        <button class="active" data-hsub="vitals"><i data-feather="activity"></i>Health Metrics</button>
+        <button data-hsub="meds"><i data-feather="package"></i>Medicines</button>
+        <button data-hsub="exercise"><i data-feather="zap"></i>Exercise</button>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 no-print" onclick="printNow('Health')"><i data-feather="printer"></i>Print</button>
+    </div>
+
+    <div id="health-metrics">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="activity" style="color:var(--brand)"></i>Health Score</h6>
+        <button class="btn btn-sm btn-brand d-flex align-items-center gap-1 no-print" id="addMetricBtn"><i data-feather="plus-circle"></i>Add Metric</button>
+      </div>
+      <div class="mb-3 small text-muted">For personal tracking only — set your own targets and review results with your doctor. <a href="#" id="seedHealthBtn" class="fw-semibold" style="color:var(--brand)">Load default metrics</a></div>
+      <div class="card p-3 mb-3" id="healthGlanceCard">
+        <h6 class="mb-2 d-flex align-items-center gap-1"><i data-feather="grid" style="color:var(--brand)"></i>Health at a Glance</h6>
+        <div id="glanceSummary" class="mb-2"></div>
+        <div id="glanceList" class="row g-2"></div>
+      </div>
+      <div class="row g-3" id="healthGrid"></div>
+      <div id="healthEmpty" class="empty-state d-none"><div class="ic"><i data-feather="activity"></i></div><div class="mt-2">No health metrics yet.<br>Add one or load the defaults.</div></div>
+    </div>
+
+    <div id="health-meds" class="d-none">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="package" style="color:var(--brand)"></i>Medicines</h6>
+        <button class="btn btn-sm btn-brand d-flex align-items-center gap-1 no-print" id="addMedBtn"><i data-feather="plus-circle"></i>Add Medicine</button>
+      </div>
+      <div class="mb-2 small text-muted">A personal reminder &amp; stock tracker — not medical advice. Follow your doctor's and pharmacist's instructions.</div>
+      <div class="card p-3 mb-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-auto"><label class="col-form-label fw-semibold d-flex align-items-center gap-1"><i data-feather="calendar" style="color:var(--brand)"></i>Day</label></div>
+          <div class="col-auto"><input type="date" class="form-control" id="medDate"></div>
+          <div class="col text-end small text-muted" id="medDaySummary"></div>
+        </div>
+        <div id="medChecklist" class="mt-2"></div>
+        <div id="medChecklistEmpty" class="text-muted small mt-2 d-none">No medicines scheduled for any time slot yet.</div>
+      </div>
+      <h6 class="mb-2 d-flex align-items-center gap-1"><i data-feather="archive" style="color:var(--brand)"></i>Stock</h6>
+      <div class="row g-3" id="medGrid"></div>
+      <div id="medEmpty" class="empty-state d-none"><div class="ic"><i data-feather="package"></i></div><div class="mt-2">No medicines yet.<br>Add one to track intake and stock.</div></div>
+    </div>
+
+    <div id="health-exercise" class="d-none">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+        <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="zap" style="color:var(--brand)"></i>Exercise</h6>
+        <button class="btn btn-sm btn-brand d-flex align-items-center gap-1 no-print" id="addExBtn"><i data-feather="plus-circle"></i>Add Exercise</button>
+      </div>
+      <div class="mb-2 small text-muted">Set daily exercise goals and check them off as you do them. <a href="#" id="seedExBtn" class="fw-semibold" style="color:var(--brand)">Load sample exercises</a></div>
+      <div class="card p-3 mb-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-auto"><label class="col-form-label fw-semibold d-flex align-items-center gap-1"><i data-feather="calendar" style="color:var(--brand)"></i>Day</label></div>
+          <div class="col-auto"><input type="date" class="form-control" id="exDate"></div>
+          <div class="col text-end"><span class="badge fs-6 rounded-pill" id="exDayPct" style="background:linear-gradient(135deg,var(--brand),var(--brand-2))">0%</span></div>
+        </div>
+        <div class="small text-muted mt-1" id="exDaySummary"></div>
+        <div id="exChecklist" class="mt-2"></div>
+        <div id="exEmpty" class="empty-state d-none"><div class="ic"><i data-feather="zap"></i></div><div class="mt-2">No exercises yet.<br>Add one or load samples.</div></div>
+      </div>
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+          <h6 class="mb-0 d-flex align-items-center gap-1"><i data-feather="trending-up" style="color:var(--brand)"></i>Progress Trend</h6>
+          <div class="btn-group btn-group-sm" id="exPeriod">
+            <button class="btn btn-outline-success active" data-exp="daily">Daily</button>
+            <button class="btn btn-outline-success" data-exp="weekly">Weekly</button>
+            <button class="btn btn-outline-success" data-exp="monthly">Monthly</button>
+            <button class="btn btn-outline-success" data-exp="quarterly">Quarter</button>
+          </div>
+        </div>
+        <canvas id="exChart" height="150"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- mobile bottom nav -->
@@ -272,6 +376,7 @@
   <button data-tab="library"><i data-feather="grid"></i><span>Library</span></button>
   <button data-tab="planner"><i data-feather="calendar"></i><span>Planner</span></button>
   <button data-tab="tracker"><i data-feather="check-square"></i><span>Tracker</span></button>
+  <button data-tab="health"><i data-feather="activity"></i><span>Health</span></button>
 </nav>
 
 <!-- FOOD MODAL -->
@@ -322,6 +427,86 @@
   <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2"><i data-feather="clock" style="color:var(--brand)"></i>Edit Meal Times</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
   <div class="modal-body"><div id="slotsEditor"></div><button class="btn btn-sm btn-outline-secondary mt-2 d-flex align-items-center gap-1" id="addSlotBtn"><i data-feather="plus"></i>Add meal slot</button></div>
   <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveSlotsBtn"><i data-feather="check"></i>Save</button></div>
+</div></div></div>
+
+<!-- HEALTH METRIC MODAL -->
+<div class="modal fade" id="metricModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2" id="metricModalTitle"><i data-feather="activity" style="color:var(--brand)"></i>Add Metric</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="mId">
+    <div class="mb-2"><label class="form-label small fw-semibold">Metric name *</label><input class="form-control" id="mName" placeholder="e.g. HbA1c"></div>
+    <div class="row g-2">
+      <div class="col-12 col-md-6"><label class="form-label small fw-semibold">Type</label>
+        <select class="form-select" id="mType">
+          <option value="number">Number (single value)</option>
+          <option value="bp">Blood Pressure (sys/dia)</option>
+          <option value="bmi">BMI (auto from Weight)</option>
+          <option value="checkup">Checkup (date + notes)</option>
+        </select></div>
+      <div class="col-6 col-md-6"><label class="form-label small fw-semibold">Unit</label><input class="form-control" id="mUnit" placeholder="e.g. %, mg/dL"></div>
+      <div class="col-6 col-md-6"><label class="form-label small fw-semibold">Normal range</label><input class="form-control" id="mNormal" placeholder="e.g. 4–5.6%"></div>
+      <div class="col-6 col-md-6"><label class="form-label small fw-semibold">Your target</label><input class="form-control" id="mTarget" placeholder="e.g. 5.7 or 120/80"></div>
+      <div class="col-6 col-md-6"><label class="form-label small fw-semibold">Recheck every (days)</label><input type="number" class="form-control" id="mCadence" min="0" placeholder="e.g. 90"></div>
+      <div class="col-12"><label class="form-label small fw-semibold">Improvement goal</label>
+        <select class="form-select" id="mGoal"><option value="lower">Lower is better</option><option value="higher">Higher is better</option><option value="range">Stay in healthy range</option></select></div>
+    </div>
+    <div class="small text-muted mt-2" id="mTypeHint"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveMetricBtn"><i data-feather="check"></i>Save</button></div>
+</div></div></div>
+
+<!-- READING MODAL -->
+<div class="modal fade" id="readingModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2"><i data-feather="plus-circle" style="color:var(--brand)"></i>Log: <span id="readingMetricName"></span></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="rMetricId">
+    <div class="mb-2"><label class="form-label small fw-semibold">Date</label><input type="date" class="form-control" id="rDate"></div>
+    <div id="rValueWrap"></div>
+    <div class="mt-2"><label class="form-label small fw-semibold">Note (optional)</label><input class="form-control" id="rNote" placeholder="e.g. fasting, lab name"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveReadingBtn"><i data-feather="check"></i>Save reading</button></div>
+</div></div></div>
+
+<!-- EXERCISE MODAL -->
+<div class="modal fade" id="exModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2" id="exModalTitle"><i data-feather="zap" style="color:var(--brand)"></i>Add Exercise</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="exId">
+    <div class="mb-2"><label class="form-label small fw-semibold">Exercise name *</label><input class="form-control" id="exName" placeholder="e.g. Morning Walk"></div>
+    <div class="mb-2"><label class="form-label small fw-semibold">Purpose</label><input class="form-control" id="exPurpose" placeholder="e.g. Cardio, weight management"></div>
+    <div class="row g-2">
+      <div class="col-6"><label class="form-label small fw-semibold">Daily target</label><input type="number" class="form-control" id="exTarget" min="0" step="any" placeholder="blank = checklist"></div>
+      <div class="col-6"><label class="form-label small fw-semibold">Unit</label><input class="form-control" id="exUnit" placeholder="min, reps, km, steps"></div>
+    </div>
+    <div class="small text-muted mt-2">Set a target to log an amount each day; leave it blank for a simple done / not-done checkbox.</div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveExBtn"><i data-feather="check"></i>Save</button></div>
+</div></div></div>
+
+<!-- MEDICINE MODAL -->
+<div class="modal fade" id="medModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title d-flex align-items-center gap-2" id="medModalTitle"><i data-feather="package" style="color:var(--brand)"></i>Add Medicine</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <input type="hidden" id="medId">
+    <div class="mb-2"><label class="form-label small fw-semibold">Medicine name *</label><input class="form-control" id="medName" placeholder="e.g. Metformin 500mg"></div>
+    <div class="mb-2"><label class="form-label small fw-semibold">Purpose</label><input class="form-control" id="medPurpose" placeholder="e.g. Blood sugar control"></div>
+    <label class="form-label small fw-semibold">When to take</label>
+    <div class="d-flex gap-3 mb-2 flex-wrap">
+      <div class="form-check"><input class="form-check-input medSlot" type="checkbox" value="Morning" id="ms-m"><label class="form-check-label" for="ms-m">Morning</label></div>
+      <div class="form-check"><input class="form-check-input medSlot" type="checkbox" value="Evening" id="ms-e"><label class="form-check-label" for="ms-e">Evening</label></div>
+      <div class="form-check"><input class="form-check-input medSlot" type="checkbox" value="Night" id="ms-n"><label class="form-check-label" for="ms-n">Night</label></div>
+    </div>
+    <div class="row g-2">
+      <div class="col-6"><label class="form-label small fw-semibold">Food timing</label>
+        <select class="form-select" id="medFood"><option value="Before food">Before food</option><option value="After food">After food</option><option value="Anytime">Anytime</option></select></div>
+      <div class="col-6"><label class="form-label small fw-semibold">Dose per intake</label><input type="number" class="form-control" id="medDose" min="0" step="any" value="1"></div>
+      <div class="col-6"><label class="form-label small fw-semibold">Unit</label><input class="form-control" id="medUnit" placeholder="tablet, ml" value="tablet"></div>
+      <div class="col-6"><label class="form-label small fw-semibold">Current stock</label><input type="number" class="form-control" id="medStock" min="0" step="any"></div>
+      <div class="col-12"><label class="form-label small fw-semibold">Low-stock alert at</label><input type="number" class="form-control" id="medThreshold" min="0" step="any" placeholder="e.g. 10"></div>
+    </div>
+    <div class="mt-2"><label class="form-label small fw-semibold">Notes (optional)</label><input class="form-control" id="medNotes" placeholder="e.g. prescribed by Dr. ___"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-light" data-bs-dismiss="modal">Cancel</button><button class="btn btn-brand d-flex align-items-center gap-1" id="saveMedBtn"><i data-feather="check"></i>Save</button></div>
 </div></div></div>
 
 <!-- CONFIRM MODAL -->
@@ -411,13 +596,18 @@ const SAMPLE_FOODS = [
 let db;
 function openDB(){
   return new Promise((resolve,reject)=>{
-    const req = indexedDB.open('nutritionPlannerDB',1);
+    const req = indexedDB.open('nutritionPlannerDB',4);
     req.onupgradeneeded = e=>{
       const d=e.target.result;
       if(!d.objectStoreNames.contains('foods')) d.createObjectStore('foods',{keyPath:'id',autoIncrement:true});
       if(!d.objectStoreNames.contains('mealPlan')){ const s=d.createObjectStore('mealPlan',{keyPath:'id',autoIncrement:true}); s.createIndex('day','day'); }
       if(!d.objectStoreNames.contains('tracking')) d.createObjectStore('tracking',{keyPath:'key'});
       if(!d.objectStoreNames.contains('meta')) d.createObjectStore('meta',{keyPath:'key'});
+      if(!d.objectStoreNames.contains('health')) d.createObjectStore('health',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('medicines')) d.createObjectStore('medicines',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('medLog')) d.createObjectStore('medLog',{keyPath:'key'});
+      if(!d.objectStoreNames.contains('exercises')) d.createObjectStore('exercises',{keyPath:'id',autoIncrement:true});
+      if(!d.objectStoreNames.contains('exLog')) d.createObjectStore('exLog',{keyPath:'key'});
     };
     req.onsuccess=e=>{ db=e.target.result; resolve(); };
     req.onerror=e=>reject(e.target.error);
@@ -437,16 +627,21 @@ async function loadState(){
   plan  = await idbAll('mealPlan');
   const sMeta = await idbGet('meta','slots'); slots = sMeta ? sMeta.value : DEFAULT_SLOTS.slice();
   const cMeta = await idbGet('meta','cats');  cats  = cMeta ? cMeta.value : DEFAULT_CATS.slice();
+  healthMetrics = await idbAll('health');
+  const hMeta = await idbGet('meta','height_cm'); heightCm = hMeta ? hMeta.value : null;
+  medicines = await idbAll('medicines');
+  exercises = await idbAll('exercises');
 }
 const saveSlots=()=>idbPut('meta',{key:'slots',value:slots});
 const saveCats =()=>idbPut('meta',{key:'cats',value:cats});
 
 /* ---------- Helpers ---------- */
-const todayISO=()=>new Date().toISOString().slice(0,10);
+function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const todayISO=()=>toISO(new Date());
 function isoToWeekday(iso){ const d=new Date(iso+'T00:00'); return (d.getDay()+6)%7; }
 function weekdayName(iso){ return DAYS[isoToWeekday(iso)]; }
-function mondayOf(iso){ const d=new Date(iso+'T00:00'); const diff=(d.getDay()+6)%7; d.setDate(d.getDate()-diff); return d.toISOString().slice(0,10); }
-function addDays(iso,n){ const d=new Date(iso+'T00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function mondayOf(iso){ const d=new Date(iso+'T00:00'); const diff=(d.getDay()+6)%7; d.setDate(d.getDate()-diff); return toISO(d); }
+function addDays(iso,n){ const d=new Date(iso+'T00:00'); d.setDate(d.getDate()+n); return toISO(d); }
 function foodById(id){ return foods.find(f=>f.id===id); }
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const trackKey=(date,planId)=>`${date}__${planId}`;
@@ -504,6 +699,7 @@ function switchTab(tab){
   if(tab==='library') renderLibrary();
   if(tab==='planner') renderPlanner();
   if(tab==='tracker') renderTracker();
+  if(tab==='health'){ renderHealth(); renderMeds(); renderExercise(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -592,7 +788,8 @@ async function deleteFood(id){
 }
 document.getElementById('seedBtn').onclick=async(e)=>{
   e.preventDefault();
-  for(const s of SAMPLE_FOODS) await idbPut('foods',{...s});
+  const existing=new Set(foods.map(f=>(f.name||'').toLowerCase()));
+  for(const s of SAMPLE_FOODS){ if(existing.has(s.name.toLowerCase())) continue; await idbPut('foods',{...s}); }
   foods=await idbAll('foods'); renderLibrary();
 };
 
@@ -807,6 +1004,559 @@ async function renderDashboard(){
     options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:'#eef3f0'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false},ticks:{maxTicksLimit:8}}}}
   });
   fi();
+}
+
+/* ---------- Health Score ---------- */
+let healthMetrics=[], heightCm=null, healthCharts={};
+let readingMetric=null;
+const metricModal=new bootstrap.Modal('#metricModal');
+const readingModal=new bootstrap.Modal('#readingModal');
+
+const DEFAULT_METRICS = [
+  {name:'HbA1c', type:'number', unit:'%', normal:'4–5.6%', target:'5.7', goal:'lower', cadence:90, history:[]},
+  {name:'Blood Sugar (Fasting)', type:'number', unit:'mg/dL', normal:'70–99', target:'99', goal:'lower', cadence:7, history:[]},
+  {name:'Blood Pressure', type:'bp', unit:'mmHg', normal:'<120/80', target:'120/80', goal:'lower', cadence:7, history:[]},
+  {name:'Weight', type:'number', unit:'kg', normal:'', target:'', goal:'range', cadence:7, history:[]},
+  {name:'BMI', type:'bmi', unit:'kg/m²', normal:'18.5–24.9', target:'23', goal:'range', cadence:0, history:[]},
+  {name:'Cholesterol (Total)', type:'number', unit:'mg/dL', normal:'<200', target:'200', goal:'lower', cadence:180, history:[]},
+  {name:'Vitamin D', type:'number', unit:'ng/mL', normal:'30–100', target:'40', goal:'higher', cadence:180, history:[]},
+  {name:'Vitamin B12', type:'number', unit:'pg/mL', normal:'200–900', target:'500', goal:'higher', cadence:180, history:[]},
+  {name:'Liver Function', type:'checkup', unit:'', normal:'', target:'', goal:'range', cadence:180, history:[]},
+  {name:'Kidney Function', type:'checkup', unit:'', normal:'', target:'', goal:'range', cadence:180, history:[]},
+  {name:'Eye Checkup', type:'checkup', unit:'', normal:'', target:'', goal:'range', cadence:365, history:[]},
+  {name:'Dental Checkup', type:'checkup', unit:'', normal:'', target:'', goal:'range', cadence:180, history:[]},
+];
+
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00'); return d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}); }
+function weightHistory(){
+  const w=healthMetrics.find(x=>x.type==='number' && /weight/i.test(x.name));
+  return w ? (w.history||[]).slice().sort((a,b)=>a.date.localeCompare(b.date)) : [];
+}
+function metricSeries(m){
+  if(m.type==='bmi'){
+    if(!heightCm) return [];
+    const h=heightCm/100;
+    return weightHistory().map(r=>({date:r.date, value:Math.round((r.value/(h*h))*10)/10}));
+  }
+  return (m.history||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+}
+function nextDue(m){
+  const s = m.type==='bmi' ? metricSeries(m) : (m.history||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const last = s.length ? s[s.length-1].date : null;
+  if(!last || !+m.cadence) return {date:null,status:'none'};
+  const nd=addDays(last,+m.cadence), today=todayISO();
+  const status = nd<today ? 'over' : (nd<=addDays(today,7) ? 'soon' : 'ok');
+  return {date:nd,status};
+}
+function changeHtml(m,cur,prev){
+  if(m.type==='checkup'||!cur||!prev) return '';
+  let c,p;
+  if(m.type==='bp'){ c=cur.sys; p=prev.sys; } else { c=cur.value; p=prev.value; }
+  const diff=Math.round((c-p)*100)/100;
+  if(diff===0) return '<span class="chg chg-flat">→ 0</span>';
+  const up=diff>0, goal=m.goal||'range';
+  let cls='chg-flat';
+  if(goal==='lower') cls = up?'chg-bad':'chg-good';
+  else if(goal==='higher') cls = up?'chg-good':'chg-bad';
+  return `<span class="chg ${cls}">${up?'↑':'↓'} ${Math.abs(diff)}</span>`;
+}
+
+function parseRange(str){
+  if(!str) return null;
+  str=String(str).trim(); let m;
+  if(m=str.match(/^[<≤]\s*([\d.]+)/)) return {min:-Infinity, max:parseFloat(m[1])};
+  if(m=str.match(/^[>≥]\s*([\d.]+)/)) return {min:parseFloat(m[1]), max:Infinity};
+  if(m=str.match(/([\d.]+)\s*[–-]\s*([\d.]+)/)) return {min:parseFloat(m[1]), max:parseFloat(m[2])};
+  if(m=str.match(/^([\d.]+)$/)) return {min:-Infinity, max:parseFloat(m[1])};
+  return null;
+}
+function statusFor(val,range){
+  if(!range||isNaN(val)) return null;
+  if(val<range.min) return {label:'Low', cls:'st-low'};
+  if(val>range.max) return {label:'High', cls:'st-high'};
+  return {label:'Normal', cls:'st-ok'};
+}
+function normalStatus(m,cur){
+  if(!cur||m.type==='checkup') return null;
+  if(m.type==='bp'){
+    const parts=(m.normal||'').split('/'); if(parts.length<2) return null;
+    const rs=parseRange(parts[0]), rd=parseRange(parts[1]); if(!rs||!rd) return null;
+    const sOk=cur.sys>=rs.min&&cur.sys<=rs.max, dOk=cur.dia>=rd.min&&cur.dia<=rd.max;
+    if(sOk&&dOk) return {label:'Normal', cls:'st-ok'};
+    if(cur.sys>rs.max||cur.dia>rd.max) return {label:'High', cls:'st-high'};
+    return {label:'Low', cls:'st-low'};
+  }
+  return statusFor(cur.value, parseRange(m.normal));
+}
+
+function pctToRange(val,range){
+  if(!range || isNaN(val)) return null;
+  if(val>=range.min && val<=range.max) return 100;
+  if(val<range.min) return range.min>0 ? Math.max(0,Math.round(val/range.min*100)) : 0;
+  return val>0 ? Math.max(0,Math.round(range.max/val*100)) : 0;
+}
+function achievePct(m,cur){
+  if(!cur || m.type==='checkup') return null;
+  if(m.type==='bp'){
+    const parts=(m.normal||'').split('/'); if(parts.length<2) return null;
+    const a=pctToRange(cur.sys,parseRange(parts[0])), b=pctToRange(cur.dia,parseRange(parts[1]));
+    if(a==null||b==null) return null;
+    return Math.min(a,b);
+  }
+  return pctToRange(cur.value, parseRange(m.normal));
+}
+function renderGlance(){
+  const card=document.getElementById('healthGlanceCard');
+  if(!healthMetrics.length){ card.classList.add('d-none'); return; }
+  card.classList.remove('d-none');
+  let nNormal=0,nOut=0,nNo=0,nDue=0,pctSum=0,pctCount=0;
+  const rows=healthMetrics.map(m=>{
+    const s=metricSeries(m);
+    const cur=s.length? s[s.length-1]:null;
+    const due=nextDue(m);
+    if(due.status==='over'||due.status==='soon') nDue++;
+    let valTxt='—', pill='';
+    const pct=achievePct(m,cur);
+    if(!cur){ nNo++; }
+    else {
+      valTxt = m.type==='checkup' ? fmtDate(cur.date) : (m.type==='bp' ? `${cur.sys}/${cur.dia}` : cur.value);
+      const st=normalStatus(m,cur);
+      if(st){ pill=`<span class="st-pill ${st.cls}">${st.label}</span>`; if(st.label==='Normal') nNormal++; else nOut++; }
+    }
+    if(pct!=null){ pctSum+=pct; pctCount++; }
+    const unit = (cur && m.type!=='checkup' && m.unit) ? ' '+esc(m.unit) : '';
+    const dueMark = due.status==='over'?' <span class="due-over">overdue</span>': due.status==='soon'?' <span class="due-soon">due soon</span>':'';
+    const barW = pct==null?0:pct;
+    const barC = pct==null?'#cbd5d1':(pct>=100?'#16a34a':(pct>=50?'#f59e0b':'#ef4444'));
+    const pctTxt = pct==null?'':` · <b>${pct}%</b>`;
+    return `<div class="col-md-6"><div class="gl-row2">
+      <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+        <span class="d-inline-flex align-items-center gap-1" style="min-width:0"><span class="gl-name">${esc(m.name)}</span>${pill}</span>
+        <span class="small text-muted text-nowrap">${esc(String(valTxt))}${unit}${pctTxt}${dueMark}</span>
+      </div>
+      <div class="progress" style="height:6px"><div class="progress-bar" style="width:${barW}%;background:${barC}"></div></div>
+    </div></div>`;
+  }).join('');
+  document.getElementById('glanceList').innerHTML=rows;
+  const overall = pctCount? Math.round(pctSum/pctCount) : null;
+  document.getElementById('glanceSummary').innerHTML=
+    (overall!=null?`<span class="gl-chip gl-c-ok">Overall ${overall}% to normal</span>`:'')+
+    `<span class="gl-chip gl-c-ok">${nNormal} normal</span><span class="gl-chip gl-c-out">${nOut} need attention</span><span class="gl-chip gl-c-no">${nNo} no reading</span><span class="gl-chip gl-c-due">${nDue} due</span>`;
+}
+
+function renderHealth(){
+  const grid=document.getElementById('healthGrid');
+  document.getElementById('healthEmpty').classList.toggle('d-none', healthMetrics.length>0);
+  Object.values(healthCharts).forEach(c=>{ try{c.destroy()}catch(e){} }); healthCharts={};
+  grid.innerHTML=healthMetrics.map(metricCardHtml).join('');
+  grid.querySelectorAll('.addReadingBtn').forEach(b=>b.onclick=()=>openReading(+b.dataset.id));
+  grid.querySelectorAll('.editMetricBtn').forEach(b=>b.onclick=()=>openMetricModal(+b.dataset.id));
+  grid.querySelectorAll('.delMetricBtn').forEach(b=>b.onclick=()=>delMetric(+b.dataset.id));
+  grid.querySelectorAll('.setHeightBtn').forEach(b=>b.onclick=setHeight);
+  grid.querySelectorAll('.delHist').forEach(b=>b.onclick=()=>delReading(+b.dataset.mid, b.dataset.rid));
+  grid.querySelectorAll('.clearDataBtn').forEach(b=>b.onclick=()=>clearMetricData(+b.dataset.id));
+  renderGlance();
+  healthMetrics.forEach(drawMetricChart);
+  fi();
+}
+
+function metricCardHtml(m){
+  const s=metricSeries(m);
+  const cur=s.length? s[s.length-1]:null;
+  const prev=s.length>1? s[s.length-2]:null;
+  const due=nextDue(m);
+  const dueCls = due.status==='over'?'due-over':due.status==='soon'?'due-soon':'due-ok';
+  const dueTxt = due.date? `${fmtDate(due.date)}${due.status==='over'?' · overdue':''}` : '—';
+  const chartable=(m.type==='number'||m.type==='bmi'||m.type==='bp') && s.length>0;
+  const bmiNoHeight = m.type==='bmi' && !heightCm;
+  const curTxt = cur ? (m.type==='bp'? `${cur.sys}/${cur.dia}` : cur.value) : '—';
+  const prevTxt = prev ? (m.type==='bp'? `${prev.sys}/${prev.dia}` : prev.value) : '—';
+  const chg=changeHtml(m,cur,prev);
+  const st=normalStatus(m,cur);
+  const stBadge = st ? `<span class="st-pill ${st.cls}">${st.label}</span>` : '';
+  const rawHist=(m.history||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const histRows = rawHist.length ? rawHist.map(r=>{
+    const val = m.type==='bp'? `${r.sys}/${r.dia}` : (m.type==='checkup'? (r.note||'logged') : r.value);
+    return `<div class="hist-row"><span>${fmtDate(r.date)}</span>
+      <span class="flex-grow-1 text-end"><b>${esc(String(val))}</b>${m.type!=='checkup'&&r.note?` <span class="text-muted">${esc(r.note)}</span>`:''}</span>
+      <span class="text-danger delHist" data-mid="${m.id}" data-rid="${r.id}" style="cursor:pointer;font-size:1rem">&times;</span></div>`;
+  }).join('') : '<div class="text-muted small py-1">No readings yet.</div>';
+
+  return `<div class="col-md-6 col-xl-4"><div class="card p-3 metric-card h-100">
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <div><div class="fw-bold">${esc(m.name)}</div>${m.unit?`<div class="mc-unit">${esc(m.unit)}</div>`:''}</div>
+      <div class="no-print text-nowrap"><button class="btn btn-sm btn-link text-secondary p-1 editMetricBtn" data-id="${m.id}"><i data-feather="edit-2"></i></button>
+        <button class="btn btn-sm btn-link text-danger p-1 delMetricBtn" data-id="${m.id}"><i data-feather="trash-2"></i></button></div>
+    </div>
+    <div class="d-flex align-items-baseline gap-2 mb-1 flex-wrap"><span class="mc-val">${esc(String(curTxt))}</span>${chg}${stBadge}</div>
+    <div class="mc-meta mb-2">${cur?`Recorded ${fmtDate(cur.date)}`:'No reading yet — tap “Add reading” below.'}</div>
+    <div class="row g-1 mc-meta mb-2">
+      <div class="col-6">Current: <b>${esc(String(curTxt))}</b></div>
+      <div class="col-6">Normal: <b>${m.normal?esc(String(m.normal)):'—'}</b></div>
+      <div class="col-6">Target: <b>${m.target?esc(String(m.target)):'—'}</b></div>
+      <div class="col-6">Previous: <b>${esc(String(prevTxt))}</b>${prev?` <span class="text-muted">(${fmtDate(prev.date)})</span>`:''}</div>
+      <div class="col-12">Next due: <b class="${dueCls}">${dueTxt}</b></div>
+    </div>
+    ${ m.type==='bmi' ? (bmiNoHeight
+        ? `<div class="alert alert-warning py-2 px-3 small mb-2">Set your height to calculate BMI from your Weight readings. <a href="#" class="setHeightBtn fw-semibold">Set height</a></div>`
+        : `<div class="small text-muted mb-2">Auto-calculated from Weight + height (${heightCm} cm). <a href="#" class="setHeightBtn">change</a></div>`) : '' }
+    ${ chartable ? `<canvas id="hchart_${m.id}" height="120" class="mb-2"></canvas>`
+        : (m.type==='number'||m.type==='bp') ? `<div class="text-muted small mb-2">Add a reading to see the trend.</div>` : '' }
+    ${ m.type!=='bmi' ? `<button class="btn btn-sm btn-outline-success w-100 addReadingBtn no-print mb-2 d-flex align-items-center justify-content-center gap-1" data-id="${m.id}"><i data-feather="plus"></i>${m.type==='checkup'?'Log checkup':'Add reading'}</button>` : '' }
+    <details><summary class="small fw-semibold" style="cursor:pointer;color:var(--brand)">History log (${(m.history||[]).length})</summary><div class="mt-1">${histRows}</div>${(m.history||[]).length?`<button class="btn btn-sm btn-outline-danger w-100 mt-2 clearDataBtn no-print d-flex align-items-center justify-content-center gap-1" data-id="${m.id}"><i data-feather="trash-2"></i>Clear all readings</button>`:''}</details>
+  </div></div>`;
+}
+
+function drawMetricChart(m){
+  if(!(m.type==='number'||m.type==='bmi'||m.type==='bp')) return;
+  const s=metricSeries(m); if(!s.length) return;
+  const el=document.getElementById('hchart_'+m.id); if(!el) return;
+  const labels=s.map(x=>x.date.slice(5));
+  let datasets;
+  if(m.type==='bp'){
+    datasets=[
+      {label:'Systolic', data:s.map(x=>x.sys), borderColor:'#ef4444', tension:.3, pointRadius:2, borderWidth:2, fill:false},
+      {label:'Diastolic', data:s.map(x=>x.dia), borderColor:'#3b82f6', tension:.3, pointRadius:2, borderWidth:2, fill:false},
+    ];
+  } else {
+    datasets=[{label:m.name, data:s.map(x=>x.value), borderColor:'#059669', backgroundColor:'rgba(5,150,105,.10)', fill:true, tension:.3, pointRadius:2, borderWidth:2}];
+    const tnum=parseFloat(m.target);
+    if(!isNaN(tnum)) datasets.push({label:'Target', data:s.map(()=>tnum), borderColor:'#d97706', borderDash:[5,4], pointRadius:0, borderWidth:1.5, fill:false});
+  }
+  healthCharts[m.id]=new Chart(el,{type:'line',data:{labels,datasets},
+    options:{plugins:{legend:{display:datasets.length>1,labels:{boxWidth:10,font:{size:10}}}},
+      scales:{y:{grid:{color:'#eef3f0'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{maxTicksLimit:6,font:{size:9}}}}}});
+}
+
+/* metric definition modal */
+function updateMetricHint(){
+  const hints={ number:'A single numeric reading tracked over time (e.g. HbA1c, cholesterol).',
+    bp:'Tracks systolic / diastolic together with a two-line trend.',
+    bmi:'Calculated automatically from your Weight readings and height.',
+    checkup:'A periodic checkup — logs the date and a result note, with a next-due reminder.' };
+  document.getElementById('mTypeHint').textContent=hints[document.getElementById('mType').value]||'';
+}
+document.getElementById('mType').onchange=updateMetricHint;
+function openMetricModal(id){
+  const m=id? healthMetrics.find(x=>x.id===id):null;
+  document.getElementById('metricModalTitle').innerHTML = m
+    ? '<i data-feather="edit-2" style="color:var(--brand)"></i>Edit Metric'
+    : '<i data-feather="activity" style="color:var(--brand)"></i>Add Metric';
+  mId.value=m?m.id:''; mName.value=m?m.name:''; mType.value=m?m.type:'number';
+  mUnit.value=m?(m.unit||''):''; mNormal.value=m?(m.normal||''):''; mTarget.value=m?(m.target||''):''; mCadence.value=m?(m.cadence||''):''; mGoal.value=m?(m.goal||'lower'):'lower';
+  updateMetricHint(); metricModal.show(); fi();
+}
+document.getElementById('addMetricBtn').onclick=()=>openMetricModal(null);
+document.getElementById('saveMetricBtn').onclick=async()=>{
+  const name=mName.value.trim(); if(!name){ mName.focus(); return; }
+  const obj={ name, type:mType.value, unit:mUnit.value.trim(), normal:mNormal.value.trim(), target:mTarget.value.trim(), goal:mGoal.value, cadence:+mCadence.value||0, history:[] };
+  if(mId.value){ const ex=healthMetrics.find(x=>x.id===+mId.value); obj.id=+mId.value; obj.history=ex?ex.history:[]; }
+  await idbPut('health',obj); healthMetrics=await idbAll('health'); metricModal.hide(); renderHealth();
+};
+async function delMetric(id){
+  const m=healthMetrics.find(x=>x.id===id);
+  if(!await uiConfirm('Delete "'+(m?m.name:'this metric')+'" and all its history?')) return;
+  await idbDel('health',id); healthMetrics=await idbAll('health'); renderHealth();
+}
+
+/* readings */
+function buildReadingInputs(m){
+  const wrap=document.getElementById('rValueWrap');
+  if(m.type==='bp'){
+    wrap.innerHTML=`<div class="row g-2"><div class="col-6"><label class="form-label small fw-semibold">Systolic</label><input type="number" class="form-control" id="rSys" min="0"></div><div class="col-6"><label class="form-label small fw-semibold">Diastolic</label><input type="number" class="form-control" id="rDia" min="0"></div></div>`;
+  } else if(m.type==='checkup'){
+    wrap.innerHTML=`<label class="form-label small fw-semibold">Result / summary</label><input class="form-control" id="rVal" placeholder="e.g. Normal, review in 6 months">`;
+  } else {
+    wrap.innerHTML=`<label class="form-label small fw-semibold">Value <span class="text-muted">(${esc(m.unit||'')})</span></label><input type="number" class="form-control" id="rVal" min="0" step="any">`;
+  }
+}
+function openReading(id){
+  const m=healthMetrics.find(x=>x.id===id); if(!m) return; readingMetric=m;
+  document.getElementById('rMetricId').value=id;
+  document.getElementById('readingMetricName').textContent=m.name;
+  document.getElementById('rDate').value=todayISO();
+  document.getElementById('rNote').value='';
+  buildReadingInputs(m); readingModal.show(); fi();
+}
+document.getElementById('saveReadingBtn').onclick=async()=>{
+  const m=readingMetric; if(!m) return;
+  const date=document.getElementById('rDate').value||todayISO();
+  const note=document.getElementById('rNote').value.trim();
+  const reading={ id:'r'+Date.now()+Math.random().toString(36).slice(2,5), date };
+  if(m.type==='bp'){
+    reading.sys=+document.getElementById('rSys').value||0;
+    reading.dia=+document.getElementById('rDia').value||0;
+    if(note) reading.note=note;
+  } else if(m.type==='checkup'){
+    const res=document.getElementById('rVal').value.trim();
+    reading.note=[res,note].filter(Boolean).join(' — ');
+  } else {
+    reading.value=+document.getElementById('rVal').value||0;
+    if(note) reading.note=note;
+  }
+  m.history=m.history||[]; m.history.push(reading);
+  await idbPut('health',m); healthMetrics=await idbAll('health'); readingModal.hide(); renderHealth();
+};
+async function delReading(mid, rid){
+  const m=healthMetrics.find(x=>x.id===mid); if(!m) return;
+  m.history=(m.history||[]).filter(r=>r.id!==rid);
+  await idbPut('health',m); healthMetrics=await idbAll('health'); renderHealth();
+}
+async function clearMetricData(id){
+  const m=healthMetrics.find(x=>x.id===id); if(!m) return;
+  if(!await uiConfirm('Clear all readings for "'+m.name+'"? The metric itself stays — only its recorded values are removed.','Clear all')) return;
+  m.history=[]; await idbPut('health',m); healthMetrics=await idbAll('health'); renderHealth();
+}
+async function setHeight(e){
+  if(e) e.preventDefault();
+  let v=await uiPrompt('Your height in cm', heightCm||''); if(v==null) return;
+  v=parseFloat(v); if(isNaN(v)||v<=0) return;
+  heightCm=v; await idbPut('meta',{key:'height_cm',value:v}); renderHealth();
+}
+document.getElementById('seedHealthBtn').onclick=async(e)=>{
+  e.preventDefault();
+  const existing=new Set(healthMetrics.map(m=>(m.name||'').toLowerCase()));
+  for(const d of DEFAULT_METRICS){ if(existing.has(d.name.toLowerCase())) continue; await idbPut('health',{...d, history:[]}); }
+  healthMetrics=await idbAll('health'); renderHealth();
+};
+
+/* ---------- Medicines ---------- */
+let medicines=[];
+const MED_SLOTS=['Morning','Evening','Night'];
+const medModal=new bootstrap.Modal('#medModal');
+
+document.querySelectorAll('#healthSub button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#healthSub button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const s=b.dataset.hsub;
+  document.getElementById('health-metrics').classList.toggle('d-none', s!=='vitals');
+  document.getElementById('health-meds').classList.toggle('d-none', s!=='meds');
+  document.getElementById('health-exercise').classList.toggle('d-none', s!=='exercise');
+  if(s==='vitals') renderHealth(); else if(s==='meds') renderMeds(); else renderExercise();
+});
+
+document.getElementById('medDate').value=todayISO();
+document.getElementById('medDate').onchange=renderMeds;
+
+async function getMedLog(date){
+  const all=await idbAll('medLog');
+  return new Set(all.filter(l=>l.date===date && l.taken).map(l=>`${l.medId}__${l.slot}`));
+}
+function dailyDoses(m){ return (m.slots||[]).length * (+m.dose||0); }
+
+async function renderMeds(){
+  const date=document.getElementById('medDate').value||todayISO();
+  const taken=await getMedLog(date);
+  let any=false, done=0, total=0, html='';
+  MED_SLOTS.forEach(slot=>{
+    const meds=medicines.filter(m=>(m.slots||[]).includes(slot));
+    if(!meds.length) return;
+    html+=`<div class="med-slot-head">${slot}</div>`;
+    meds.forEach(m=>{
+      any=true; total++;
+      const isDone=taken.has(`${m.id}__${slot}`); if(isDone) done++;
+      html+=`<div class="med-check ${isDone?'done':''}">
+        <input class="form-check-input m-0 medTrk" type="checkbox" data-mid="${m.id}" data-slot="${slot}" ${isDone?'checked':''}>
+        <div class="flex-grow-1"><span class="mc-name fw-semibold">${esc(m.name)}</span>
+          <div class="small text-muted">${esc(m.food||'')} · ${m.dose||1} ${esc(m.unit||'')}${m.purpose?' · '+esc(m.purpose):''}</div></div>
+      </div>`;
+    });
+  });
+  document.getElementById('medChecklist').innerHTML=html;
+  document.getElementById('medChecklistEmpty').classList.toggle('d-none', any);
+  document.getElementById('medDaySummary').textContent = total? `${done} of ${total} doses taken` : '';
+  document.querySelectorAll('.medTrk').forEach(c=>c.onchange=()=>toggleMedDose(date, +c.dataset.mid, c.dataset.slot, c.checked));
+  renderMedStock();
+  fi();
+}
+
+async function toggleMedDose(date, mid, slot, checked){
+  const m=medicines.find(x=>x.id===mid); if(!m) return;
+  const key=`${date}__${mid}__${slot}`, dose=+m.dose||0;
+  if(checked){ await idbPut('medLog',{key,date,medId:mid,slot,taken:true}); m.stock=Math.max(0,(+m.stock||0)-dose); }
+  else { await idbDel('medLog',key); m.stock=(+m.stock||0)+dose; }
+  await idbPut('medicines',m); medicines=await idbAll('medicines'); renderMeds();
+}
+
+function renderMedStock(){
+  const grid=document.getElementById('medGrid');
+  document.getElementById('medEmpty').classList.toggle('d-none', medicines.length>0);
+  grid.innerHTML=medicines.map(m=>{
+    const stock=+m.stock||0, perDay=dailyDoses(m);
+    const days = perDay>0 ? Math.floor(stock/perDay) : null;
+    const low = (m.threshold!=null && m.threshold!=='' && stock<=+m.threshold) || (days!=null && days<=3);
+    const cls = low?'stock-low':'stock-ok';
+    return `<div class="col-md-6 col-xl-4"><div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-start mb-1">
+        <div><div class="fw-bold">${esc(m.name)}</div>${m.purpose?`<div class="small text-muted">${esc(m.purpose)}</div>`:''}</div>
+        <div class="no-print text-nowrap"><button class="btn btn-sm btn-link text-secondary p-1 editMedBtn" data-id="${m.id}"><i data-feather="edit-2"></i></button>
+          <button class="btn btn-sm btn-link text-danger p-1 delMedBtn" data-id="${m.id}"><i data-feather="trash-2"></i></button></div>
+      </div>
+      <div class="d-flex align-items-baseline gap-2 mb-1"><span class="mc-val ${cls}">${stock}</span><span class="mc-unit">${esc(m.unit||'')} left</span>${low?'<span class="st-pill st-high">Reorder</span>':''}</div>
+      <div class="mc-meta mb-1">${(m.slots||[]).join(', ')||'No schedule'}${m.food?' · '+esc(m.food):''}${perDay>0?` · ${perDay} ${esc(m.unit||'')}/day`:''}</div>
+      ${days!=null?`<div class="mc-meta mb-2">≈ <b class="${cls}">${days}</b> day${days===1?'':'s'} of supply left</div>`:'<div class="mc-meta mb-2">Set a schedule to estimate supply.</div>'}
+      ${m.notes?`<div class="mc-meta mb-2">${esc(m.notes)}</div>`:''}
+      <button class="btn btn-sm btn-outline-success w-100 restockBtn no-print d-flex align-items-center justify-content-center gap-1" data-id="${m.id}"><i data-feather="plus"></i>Restock</button>
+    </div></div>`;
+  }).join('');
+  grid.querySelectorAll('.editMedBtn').forEach(b=>b.onclick=()=>openMedModal(+b.dataset.id));
+  grid.querySelectorAll('.delMedBtn').forEach(b=>b.onclick=()=>delMed(+b.dataset.id));
+  grid.querySelectorAll('.restockBtn').forEach(b=>b.onclick=()=>restockMed(+b.dataset.id));
+}
+
+function openMedModal(id){
+  const m=id? medicines.find(x=>x.id===id):null;
+  document.getElementById('medModalTitle').innerHTML = m
+    ? '<i data-feather="edit-2" style="color:var(--brand)"></i>Edit Medicine'
+    : '<i data-feather="package" style="color:var(--brand)"></i>Add Medicine';
+  medId.value=m?m.id:''; medName.value=m?m.name:''; medPurpose.value=m?(m.purpose||''):'';
+  document.querySelectorAll('.medSlot').forEach(c=>c.checked = m? (m.slots||[]).includes(c.value):false);
+  medFood.value=m?(m.food||'Before food'):'Before food';
+  medDose.value=m?(m.dose??1):1; medUnit.value=m?(m.unit||'tablet'):'tablet';
+  medStock.value=m?(m.stock??''):''; medThreshold.value=m?(m.threshold??''):''; medNotes.value=m?(m.notes||''):'';
+  medModal.show(); fi();
+}
+document.getElementById('addMedBtn').onclick=()=>openMedModal(null);
+document.getElementById('saveMedBtn').onclick=async()=>{
+  const name=medName.value.trim(); if(!name){ medName.focus(); return; }
+  const slots=[...document.querySelectorAll('.medSlot:checked')].map(c=>c.value);
+  const obj={ name, purpose:medPurpose.value.trim(), slots, food:medFood.value,
+    dose:+medDose.value||0, unit:medUnit.value.trim()||'unit',
+    stock:+medStock.value||0, threshold: medThreshold.value===''?null:+medThreshold.value, notes:medNotes.value.trim() };
+  if(medId.value) obj.id=+medId.value;
+  await idbPut('medicines',obj); medicines=await idbAll('medicines'); medModal.hide(); renderMeds();
+};
+async function delMed(id){
+  const m=medicines.find(x=>x.id===id);
+  if(!await uiConfirm('Delete "'+(m?m.name:'this medicine')+'"?')) return;
+  await idbDel('medicines',id); medicines=await idbAll('medicines'); renderMeds();
+}
+async function restockMed(id){
+  const m=medicines.find(x=>x.id===id); if(!m) return;
+  let v=await uiPrompt('Add quantity to stock for '+m.name+' (current: '+(+m.stock||0)+' '+(m.unit||'')+')','');
+  if(v==null) return; v=parseFloat(v); if(isNaN(v)) return;
+  m.stock=(+m.stock||0)+v; await idbPut('medicines',m); medicines=await idbAll('medicines'); renderMeds();
+}
+
+/* ---------- Exercise Tracker ---------- */
+let exercises=[], exTrendChart=null, exPeriod='daily';
+const exModal=new bootstrap.Modal('#exModal');
+const DEFAULT_EXERCISES=[
+  {name:'Walk', purpose:'Cardio', target:30, unit:'min'},
+  {name:'Steps', purpose:'Daily activity', target:8000, unit:'steps'},
+  {name:'Stretching', purpose:'Flexibility', target:10, unit:'min'},
+  {name:'Strength (Push-ups)', purpose:'Strength', target:30, unit:'reps'},
+  {name:'Yoga / Meditation', purpose:'Wellbeing', target:0, unit:''},
+];
+
+document.getElementById('exDate').value=todayISO();
+document.getElementById('exDate').onchange=renderExercise;
+document.querySelectorAll('#exPeriod button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#exPeriod button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); exPeriod=b.dataset.exp; renderExTrend();
+});
+document.getElementById('addExBtn').onclick=()=>openExModal(null);
+document.getElementById('seedExBtn').onclick=async(e)=>{ e.preventDefault();
+  const existing=new Set(exercises.map(x=>(x.name||'').toLowerCase()));
+  for(const d of DEFAULT_EXERCISES){ if(existing.has(d.name.toLowerCase())) continue; await idbPut('exercises',{...d}); }
+  exercises=await idbAll('exercises'); renderExercise();
+};
+
+async function getExLog(date){
+  const all=await idbAll('exLog'); const map={};
+  all.filter(l=>l.date===date).forEach(l=>map[l.exId]=l); return map;
+}
+async function renderExercise(){
+  const date=document.getElementById('exDate').value||todayISO();
+  const log=await getExLog(date);
+  let html='', done=0;
+  exercises.forEach(ex=>{
+    const e=log[ex.id]||{}; const hasT=+ex.target>0; const val=+e.value||0;
+    const isDone = hasT? val>=+ex.target : !!e.done; if(isDone) done++;
+    const pct = hasT? Math.min(100,Math.round(val/+ex.target*100)) : (isDone?100:0);
+    html+=`<div class="med-check ${isDone?'done':''}">
+      ${ hasT
+        ? `<input type="number" class="form-control form-control-sm exVal" data-id="${ex.id}" value="${val||''}" min="0" step="any" style="width:80px" placeholder="0">`
+        : `<input type="checkbox" class="form-check-input m-0 exChk" data-id="${ex.id}" ${isDone?'checked':''}>` }
+      <div class="flex-grow-1"><span class="mc-name fw-semibold">${esc(ex.name)}</span>
+        <div class="small text-muted">${hasT?`Target: ${ex.target} ${esc(ex.unit||'')}`:'Done / not done'}${ex.purpose?' · '+esc(ex.purpose):''}</div>
+        ${hasT?`<div class="progress mt-1" style="height:5px"><div class="progress-bar" style="width:${pct}%"></div></div>`:''}</div>
+      <div class="no-print text-nowrap"><button class="btn btn-sm btn-link text-secondary p-1 editExBtn" data-id="${ex.id}"><i data-feather="edit-2"></i></button>
+        <button class="btn btn-sm btn-link text-danger p-1 delExBtn" data-id="${ex.id}"><i data-feather="trash-2"></i></button></div>
+    </div>`;
+  });
+  document.getElementById('exChecklist').innerHTML=html;
+  document.getElementById('exEmpty').classList.toggle('d-none', exercises.length>0);
+  const total=exercises.length, pct=total?Math.round(done/total*100):0;
+  document.getElementById('exDayPct').textContent=pct+'%';
+  document.getElementById('exDaySummary').textContent= total? `${done} of ${total} exercises completed`:'';
+  document.querySelectorAll('.exVal').forEach(inp=>inp.onchange=()=>logExercise(date,+inp.dataset.id,+inp.value||0,null));
+  document.querySelectorAll('.exChk').forEach(c=>c.onchange=()=>logExercise(date,+c.dataset.id,null,c.checked));
+  document.querySelectorAll('.editExBtn').forEach(b=>b.onclick=()=>openExModal(+b.dataset.id));
+  document.querySelectorAll('.delExBtn').forEach(b=>b.onclick=()=>delExercise(+b.dataset.id));
+  await renderExTrend(); fi();
+}
+async function logExercise(date, exId, value, doneFlag){
+  const ex=exercises.find(x=>x.id===exId); if(!ex) return;
+  const key=`${date}__${exId}`, hasT=+ex.target>0;
+  const entry={key,date,exId};
+  if(hasT){ entry.value=value||0; entry.done=entry.value>=+ex.target; }
+  else { entry.done=!!doneFlag; entry.value=entry.done?1:0; }
+  if(!entry.done && !entry.value) await idbDel('exLog',key); else await idbPut('exLog',entry);
+  renderExercise();
+}
+async function renderExTrend(){
+  const all=await idbAll('exLog');
+  const byDate={}; all.forEach(l=>{ (byDate[l.date]=byDate[l.date]||{})[l.exId]=l; });
+  const sel=document.getElementById('exDate').value||todayISO(), tdy=todayISO();
+  const total=exercises.length||1, today=(sel>tdy?sel:tdy);
+  const doneForDate=d=>{ const day=byDate[d]; if(!day) return 0; let c=0;
+    exercises.forEach(ex=>{ const e=day[ex.id]; if(!e) return; const hasT=+ex.target>0;
+      if(hasT ? (+e.value>=+ex.target) : !!e.done) c++; }); return c; };
+  const pctFor=d=>Math.round((doneForDate(d)/total)*100);
+  const avgRange=(s,e)=>{ let sum=0,n=0,d=s; while(d<=e){ sum+=pctFor(d); n++; d=addDays(d,1);} return n?Math.round(sum/n):0; };
+  let labels=[], data=[];
+  if(exPeriod==='daily'){
+    for(let i=29;i>=0;i--){ const d=addDays(today,-i); labels.push(d.slice(5)); data.push(pctFor(d)); }
+  } else if(exPeriod==='weekly'){
+    for(let w=11;w>=0;w--){ const mon=addDays(mondayOf(today),-w*7); let s=0; for(let k=0;k<7;k++) s+=pctFor(addDays(mon,k)); labels.push(mon.slice(5)); data.push(Math.round(s/7)); }
+  } else if(exPeriod==='monthly'){
+    const now=new Date(today+'T00:00');
+    for(let m=11;m>=0;m--){ const dt=new Date(now.getFullYear(),now.getMonth()-m,1); const s=toISO(dt);
+      let e=toISO(new Date(dt.getFullYear(),dt.getMonth()+1,0)); if(e>today) e=today;
+      labels.push(s.slice(0,7)); data.push(avgRange(s,e)); }
+  } else {
+    const now=new Date(today+'T00:00');
+    for(let q=7;q>=0;q--){ const bm=now.getMonth()-(now.getMonth()%3)-q*3; const dt=new Date(now.getFullYear(),bm,1);
+      const s=toISO(dt); let e=toISO(new Date(dt.getFullYear(),dt.getMonth()+3,0)); if(e>today) e=today;
+      labels.push('Q'+(Math.floor(dt.getMonth()/3)+1)+" '"+String(dt.getFullYear()).slice(2)); data.push(avgRange(s,e)); }
+  }
+  const el=document.getElementById('exChart'); if(!el) return;
+  if(exTrendChart) exTrendChart.destroy();
+  exTrendChart=new Chart(el,{ type: exPeriod==='daily'?'line':'bar',
+    data:{labels,datasets:[{label:'Completion %',data,borderColor:'#059669',backgroundColor:exPeriod==='daily'?'rgba(5,150,105,.12)':'#10b981',fill:exPeriod==='daily',tension:.3,pointRadius:2,borderWidth:2,borderRadius:6,maxBarThickness:30}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,grid:{color:'#eef3f0'},ticks:{callback:v=>v+'%'}},x:{grid:{display:false},ticks:{maxTicksLimit:8,font:{size:9}}}}}});
+}
+function openExModal(id){
+  const ex=id? exercises.find(x=>x.id===id):null;
+  document.getElementById('exModalTitle').innerHTML = ex? '<i data-feather="edit-2" style="color:var(--brand)"></i>Edit Exercise':'<i data-feather="zap" style="color:var(--brand)"></i>Add Exercise';
+  exId.value=ex?ex.id:''; exName.value=ex?ex.name:''; exPurpose.value=ex?(ex.purpose||''):'';
+  exTarget.value=ex?(ex.target||''):''; exUnit.value=ex?(ex.unit||''):'';
+  exModal.show(); fi();
+}
+document.getElementById('saveExBtn').onclick=async()=>{
+  const name=exName.value.trim(); if(!name){ exName.focus(); return; }
+  const obj={ name, purpose:exPurpose.value.trim(), target:+exTarget.value||0, unit:exUnit.value.trim() };
+  if(exId.value) obj.id=+exId.value;
+  await idbPut('exercises',obj); exercises=await idbAll('exercises'); exModal.hide(); renderExercise();
+};
+async function delExercise(id){
+  const ex=exercises.find(x=>x.id===id);
+  if(!await uiConfirm('Delete "'+(ex?ex.name:'this exercise')+'"?')) return;
+  await idbDel('exercises',id);
+  const logs=await idbAll('exLog');
+  for(const l of logs) if(l.exId===id) await idbDel('exLog',l.key);
+  exercises=await idbAll('exercises'); renderExercise();
 }
 
 /* ---------- Init ---------- */
