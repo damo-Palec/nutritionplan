@@ -30,6 +30,8 @@
     box-shadow:0 6px 24px rgba(5,150,105,.25); }
   .app-header .logo{ width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.18);
     display:grid;place-items:center;font-size:1.05rem;backdrop-filter:blur(6px); }
+  .app-header .hbtn{ background:rgba(255,255,255,.16);border:none;border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#fff; transition:.16s; }
+  .app-header .hbtn:hover{ background:rgba(255,255,255,.30); }
   .brand-title{ font-weight:800; letter-spacing:-.5px; font-size:1.18rem; }
   .seg-nav{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:5px;
     box-shadow:0 2px 8px rgba(0,0,0,.04); display:inline-flex; gap:4px; }
@@ -132,6 +134,31 @@
   ::-webkit-scrollbar{ height:8px; width:8px; }
   ::-webkit-scrollbar-thumb{ background:#cdd9d3; border-radius:8px; }
   .modal-content{ border:none; border-radius:18px; }
+
+  /* ---------- Help / User Guide ---------- */
+  .help-intro{ background:var(--brand-soft); border:1px solid #cfe9da; border-radius:14px; padding:14px 16px; font-size:.9rem; color:#244a3b; }
+  .help-toc{ display:flex; flex-wrap:wrap; gap:7px; margin:14px 0 4px; }
+  .help-toc button{ border:1px solid var(--line); background:#fff; color:var(--brand-dark); font-weight:600;
+    font-size:.78rem; border-radius:20px; padding:6px 13px; display:inline-flex; align-items:center; gap:6px; transition:.16s; }
+  .help-toc button:hover{ background:var(--brand-soft); border-color:#bfe6d2; }
+  .help-modal .accordion-item{ border:1px solid var(--line); border-radius:14px!important; margin-bottom:9px; overflow:hidden; }
+  .help-modal .accordion-button{ font-weight:700; font-size:.95rem; padding:14px 16px; border-radius:14px!important; }
+  .help-modal .accordion-button:not(.collapsed){ background:var(--brand-soft); color:var(--brand-dark); box-shadow:none; border-radius:14px 14px 0 0!important; }
+  .help-modal .accordion-button:focus{ box-shadow:none; }
+  .help-modal .accordion-button::after{ background-size:1rem; }
+  .help-modal .accordion-button .feather{ color:var(--brand); margin-right:10px; }
+  .help-modal .accordion-body{ font-size:.875rem; line-height:1.6; color:var(--ink); padding:8px 18px 18px; }
+  .help-modal .accordion-body ul{ padding-left:1.1rem; margin-bottom:.5rem; }
+  .help-modal .accordion-body li{ margin-bottom:6px; }
+  .help-modal .accordion-body .lead-line{ color:var(--muted); margin-bottom:10px; }
+  .help-step{ display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+  .help-step .n{ flex:0 0 auto; width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    color:#fff; font-weight:700; font-size:.82rem; display:grid; place-items:center; box-shadow:0 3px 8px rgba(5,150,105,.3); }
+  .help-step .stx{ padding-top:2px; }
+  .help-key{ background:#eef4f1; border:1px solid var(--line); border-radius:7px; padding:1px 7px; font-size:.78rem; font-weight:600; color:var(--brand-dark); white-space:nowrap; }
+  .help-tip{ background:#fff8ec; border:1px solid #fce8c0; border-radius:10px; padding:9px 12px; font-size:.82rem; color:#7a5a17; margin-top:8px; display:flex; gap:8px; }
+  .help-tip .feather{ color:#d97706; flex:0 0 auto; margin-top:2px; }
+
   .print-only{ display:none; }
   @media print{
     @page{ margin:12mm; }
@@ -150,6 +177,32 @@
     .food-chip{ font-size:.58rem; margin:1px; }
     canvas{ max-width:100%!important; }
   }
+  body.dark{ --bg:#0f1715; --card:#161f1c; --ink:#e6efeb; --line:#27332f; --muted:#94a39d; --brand-soft:#14241d; }
+  body.dark .card{ background:var(--card); border-color:var(--line); }
+  body.dark .form-control, body.dark .form-select{ background:#1b2622; color:var(--ink); border-color:var(--line); }
+  body.dark .form-control::placeholder{ color:#71837c; }
+  body.dark .modal-content{ background:var(--card); color:var(--ink); }
+  body.dark .table{ color:var(--ink); }
+  body.dark .table>:not(caption)>*>*{ background:var(--card); color:var(--ink); }
+  body.dark .table-light th{ background:#1b2622!important; color:var(--ink)!important; }
+  body.dark .table-hover>tbody>tr:hover>*{ background:#1f2b27!important; }
+  body.dark .seg-nav{ background:#161f1c; }
+  body.dark .bottom-nav{ background:rgba(20,28,25,.94); }
+  body.dark .btn-light{ background:#1b2622; color:var(--ink); border-color:var(--line); }
+  body.dark .bg-light{ background:#1b2622!important; }
+  body.dark .text-dark{ color:var(--ink)!important; }
+  body.dark .text-muted{ color:var(--muted)!important; }
+  body.dark .btn-close{ filter:invert(1) grayscale(1) brightness(1.4); }
+  body.dark .check-item, body.dark .med-check, body.dark .gl-row2{ background:var(--card); }
+  body.dark .food-chip{ background:#1f2b27; color:#cfe0d8; }
+  body.dark .planner-table .slot-col{ background:#1b2622; }
+  body.dark .accordion-button{ background:#1b2622; color:var(--ink); }
+  body.dark .accordion-button:not(.collapsed){ background:var(--brand-soft); color:#9fe6c4; }
+  body.dark .accordion-body{ background:var(--card); color:var(--ink); }
+  body.dark .accordion-button::after{ filter:invert(.85); }
+  body.dark .help-toc button{ background:#1b2622; color:#9fe6c4; }
+  body.dark .help-key{ background:#1b2622; color:#9fe6c4; }
+  body.dark .help-tip{ background:#241f12; border-color:#4a3c1c; color:#e3c98b; }
   @media (max-width:576px){ .stat-card .num{ font-size:1.6rem; } }
 </style>
 </head>
@@ -161,7 +214,11 @@
       <span class="logo"><i data-feather="clipboard"></i></span>
       <span class="brand-title">Nutrition Planner</span>
     </div>
-    <span class="text-white-50 small d-none d-sm-flex align-items-center gap-1"><i data-feather="cloud"></i> Saved on this device</span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-white-50 small d-none d-sm-flex align-items-center gap-1"><i data-feather="cloud"></i> Saved on this device</span>
+      <button class="btn btn-sm p-1 hbtn" onclick="openHelp()" title="Help &amp; User Guide"><i data-feather="help-circle"></i></button>
+      <button class="btn btn-sm p-1 hbtn" onclick="switchTab('settings')" title="Settings"><i data-feather="settings"></i></button>
+    </div>
   </div>
 </header>
 
@@ -368,6 +425,32 @@
       </div>
     </div>
   </div>
+
+  <!-- SETTINGS -->
+  <div id="tab-settings" class="tab-pane d-none">
+    <h6 class="mb-3 d-flex align-items-center gap-1"><i data-feather="settings" style="color:var(--brand)"></i>Settings</h6>
+    <div class="row g-3">
+      <div class="col-md-6"><div class="card p-3 h-100">
+        <h6 class="d-flex align-items-center gap-2"><i data-feather="download" style="color:#2563eb"></i>Backup &amp; Export</h6>
+        <p class="small text-muted mb-2">Download all your data, or a spreadsheet of your habit logs.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1" id="exportJsonBtn"><i data-feather="file-text"></i>Export Backup (JSON)</button>
+          <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-1" id="exportCsvBtn"><i data-feather="grid"></i>Export Logs (CSV)</button>
+        </div></div></div>
+      <div class="col-md-6"><div class="card p-3 h-100">
+        <h6 class="d-flex align-items-center gap-2"><i data-feather="upload" style="color:#2563eb"></i>Restore</h6>
+        <p class="small text-muted mb-2">Import a previously exported JSON backup. This replaces current data.</p>
+        <input type="file" id="importFile" accept=".json,application/json" class="form-control"></div></div>
+      <div class="col-md-6"><div class="card p-3 h-100">
+        <h6 class="d-flex align-items-center gap-2"><i data-feather="moon" style="color:var(--brand)"></i>Appearance</h6>
+        <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="darkToggle" role="switch"><label class="form-check-label" for="darkToggle">Dark mode</label></div></div></div>
+      <div class="col-md-6"><div class="card p-3 h-100">
+        <h6 class="d-flex align-items-center gap-2 text-danger"><i data-feather="alert-triangle"></i>Danger Zone</h6>
+        <p class="small text-muted mb-2">Reset wipes everything and restores the starter setup.</p>
+        <button class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1" id="resetBtn" style="width:fit-content"><i data-feather="trash-2"></i>Reset All Data</button></div></div>
+    </div>
+    <div class="small text-muted mt-3 d-flex align-items-center gap-1"><i data-feather="info"></i>Your data lives only in this browser. Export a backup regularly so you don't lose it if browser storage is cleared. Need a walkthrough? <a href="#" onclick="openHelp();return false;" class="fw-semibold" style="color:var(--brand)">Open the User Guide</a>.</div>
+  </div>
 </div>
 
 <!-- mobile bottom nav -->
@@ -378,6 +461,195 @@
   <button data-tab="tracker"><i data-feather="check-square"></i><span>Tracker</span></button>
   <button data-tab="health"><i data-feather="activity"></i><span>Health</span></button>
 </nav>
+
+<!-- HELP / USER GUIDE MODAL -->
+<div class="modal fade help-modal" id="helpModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+  <div class="modal-header" style="background:linear-gradient(125deg,#047857 0%,#10b981 70%,#34d399 100%)">
+    <h5 class="modal-title d-flex align-items-center gap-2 text-white"><i data-feather="help-circle"></i>User Guide &amp; Help</h5>
+    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <div class="help-intro d-flex gap-2 align-items-start">
+      <i data-feather="compass" style="color:var(--brand);flex:0 0 auto;margin-top:2px"></i>
+      <div>This app plans your week's meals, tracks how well you stick to them, and keeps an eye on your health metrics, medicines and exercise — all stored privately on this device. New here? Start with <b>Quick Start</b>, or jump to any section below.</div>
+    </div>
+
+    <div class="help-toc">
+      <button onclick="helpJump('help-1')"><i data-feather="play-circle"></i>Quick Start</button>
+      <button onclick="helpJump('help-2')"><i data-feather="pie-chart"></i>Dashboard</button>
+      <button onclick="helpJump('help-3')"><i data-feather="grid"></i>Food Library</button>
+      <button onclick="helpJump('help-4')"><i data-feather="calendar"></i>Weekly Planner</button>
+      <button onclick="helpJump('help-5')"><i data-feather="check-square"></i>Daily Tracker</button>
+      <button onclick="helpJump('help-6')"><i data-feather="activity"></i>Health Metrics</button>
+      <button onclick="helpJump('help-7')"><i data-feather="package"></i>Medicines</button>
+      <button onclick="helpJump('help-8')"><i data-feather="zap"></i>Exercise</button>
+      <button onclick="helpJump('help-9')"><i data-feather="save"></i>Backup &amp; Settings</button>
+      <button onclick="helpJump('help-10')"><i data-feather="shield"></i>Privacy &amp; Tips</button>
+    </div>
+
+    <div class="accordion mt-3" id="helpAcc">
+
+      <!-- 1 QUICK START -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#help-1"><i data-feather="play-circle"></i>Quick Start — get going in 3 steps</button></h2>
+        <div id="help-1" class="accordion-collapse collapse show" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">The whole app flows in one direction: <b>build foods → plan your week → tick off each day</b>. Everything else (dashboard, coverage, streaks) fills in automatically.</p>
+          <div class="help-step"><span class="n">1</span><div class="stx"><b>Build your food list.</b> Open <span class="help-key">Food Library</span> and tap <span class="help-key">Load sample foods</span> for an instant starter set, or <span class="help-key">Add Food</span> to enter your own with their calories and nutrients.</div></div>
+          <div class="help-step"><span class="n">2</span><div class="stx"><b>Plan your week.</b> Go to <span class="help-key">Weekly Planner</span> and tap <span class="help-key">+ add</span> inside any meal cell to drop foods into that slot. This is a recurring template that repeats every week.</div></div>
+          <div class="help-step"><span class="n">3</span><div class="stx"><b>Track each day.</b> In <span class="help-key">Daily Tracker</span>, pick the date and check off meals as you eat them. Your <span class="help-key">Dashboard</span> then shows adherence, streaks and trends.</div></div>
+          <div class="help-tip"><i data-feather="info"></i><div>You can do the same for <b>Health</b> — load default metrics, medicines and exercises, then log them as you go.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 2 DASHBOARD -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-2"><i data-feather="pie-chart"></i>Dashboard — your weekly snapshot</button></h2>
+        <div id="help-2" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">A read-only overview that updates itself from your tracking. Nothing to edit here.</p>
+          <ul>
+            <li><b>Top cards</b> — meals <b>planned this week</b>, how many you <b>completed</b>, how many you <b>missed</b>, and your overall <b>weekly adherence %</b>.</li>
+            <li><b>This Week's Adherence</b> — a bar per weekday showing how much of that day you completed. The <b>Best</b> badge flags your strongest day.</li>
+            <li><b>Last 30 Days Trend</b> — a line of daily adherence so you can spot patterns over the month.</li>
+            <li><b>Day streak</b> — consecutive days (counting back from today) where <b>every</b> planned meal was ticked. Days with nothing planned are skipped, not broken.</li>
+            <li><b>Consistency</b> — how many of the 7 days this week you completed fully.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="printer"></i><div>The <b>Print</b> button gives you a clean printout (or save-as-PDF) of the dashboard.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 3 FOOD LIBRARY -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-3"><i data-feather="grid"></i>Food Library &amp; Nutrient Targets</button></h2>
+        <div id="help-3" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">Your reusable catalogue of foods. Each food's nutrition is entered once and reused everywhere you plan it.</p>
+          <ul>
+            <li><b>Add Food</b> — enter a name, pick a category, and fill in macros <b>per serving</b> (calories, protein, carbs, fat, fiber). Expand <b>Micronutrients</b> to add water, calcium, iron, vitamins and more. The <b>Notes</b> field is handy for things like "good source of iron".</li>
+            <li><b>New category</b> — tap the <span class="help-key">+</span> beside the category dropdown inside the food form to create your own.</li>
+            <li><b>Search &amp; filter</b> — find foods fast by name or by category.</li>
+            <li><b>Daily Nutrient Targets</b> — the collapsible panel at the top lists the reference ranges used to score your daily coverage. These are typical adult guides, not personalised medical advice.</li>
+            <li><b>Edit / delete</b> — use the row icons. Deleting a food also removes it from any meal plans it was in.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="info"></i><div>Enter nutrition for the <b>portion you actually plan</b> (e.g. "Almonds (10)") so your coverage numbers stay realistic.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 4 WEEKLY PLANNER -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-4"><i data-feather="calendar"></i>Weekly Planner — your recurring template</button></h2>
+        <div id="help-4" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">A grid of meal slots (rows) across Mon–Sun (columns). It's a <b>recurring template</b>, not specific calendar dates — set it once and it repeats every week.</p>
+          <ul>
+            <li><b>Add a food</b> — tap <span class="help-key">+ add</span> in any cell to open the picker, then add foods to that meal. Already-added foods show a ✓.</li>
+            <li><b>Remove a food</b> — tap the <span class="help-key">×</span> on its chip.</li>
+            <li><b>Copy a day</b> — tap the copy icon in a day's header, choose target days, and that day's meals <b>overwrite</b> them. Great for "same lunch all weekdays".</li>
+            <li><b>Edit meal times</b> — rename slots, change their times, or add/remove slots entirely. Slots automatically re-sort by time.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="alert-triangle"></i><div><b>Copy overwrites.</b> The target days lose whatever was there before, so copy onto empty days or ones you're happy to replace.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 5 DAILY TRACKER -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-5"><i data-feather="check-square"></i>Daily Tracker &amp; Nutrition Coverage</button></h2>
+        <div id="help-5" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">Where the day-to-day happens. Pick a date and tick meals as you eat them.</p>
+          <ul>
+            <li><b>Pick a date</b> — the checklist is pulled from that weekday's plan, grouped by meal slot. Past or future dates work too.</li>
+            <li><b>Check off meals</b> — the progress %, the day summary, and your Dashboard all update instantly.</li>
+            <li><b>Nutrition Coverage</b> — shows how the day stacks up against your targets. Toggle <span class="help-key">Planned</span> (all planned meals) vs <span class="help-key">Eaten</span> (only what you've checked off).</li>
+            <li>A <b>✓</b> next to a nutrient means its target is met; an <b>(over)</b> flag means you've gone above the upper range.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="info"></i><div>Use <b>Eaten</b> mid-day to see what you're still short on, then plan your remaining meals around the gaps.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 6 HEALTH METRICS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-6"><i data-feather="activity"></i>Health → Metrics</button></h2>
+        <div id="help-6" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">Track lab values and vitals over time, with trend charts and recheck reminders. Tap <span class="help-key">Load default metrics</span> to start with a common set.</p>
+          <ul>
+            <li><b>Metric types:</b>
+              <ul>
+                <li><b>Number</b> — a single value over time (HbA1c, cholesterol, weight…).</li>
+                <li><b>Blood Pressure</b> — systolic / diastolic, plotted as two lines.</li>
+                <li><b>BMI</b> — calculated automatically from your <b>Weight</b> readings + your height.</li>
+                <li><b>Checkup</b> — logs a date and a result note (e.g. liver, eye, dental) with a next-due reminder.</li>
+              </ul>
+            </li>
+            <li><b>Add readings</b> over time. Each card shows the current value, the change vs the previous reading (coloured by whether that's good for your goal), its normal-range status, a target line on the chart, and the <b>next-due date</b> from your recheck cadence.</li>
+            <li><b>BMI needs your height</b> — you'll be prompted to set it once; it's reused for every BMI calc.</li>
+            <li><b>Health at a Glance</b> summarises how many metrics are normal, need attention, have no reading yet, or are due/overdue.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="alert-triangle"></i><div>This is a personal organiser, <b>not medical advice</b> — set targets and review every reading with your doctor.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 7 MEDICINES -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-7"><i data-feather="package"></i>Health → Medicines</button></h2>
+        <div id="help-7" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">A daily intake reminder plus a stock tracker that quietly counts down your supply.</p>
+          <ul>
+            <li><b>Add a medicine</b> with its schedule (<b>Morning / Evening / Night</b>), food timing, dose per intake, unit, current stock, and a low-stock alert level.</li>
+            <li><b>Daily checklist</b> — pick a day and tick off each dose by time slot. Ticking a dose <b>automatically subtracts it from stock</b>; un-ticking adds it back.</li>
+            <li><b>Stock cards</b> estimate roughly how many days of supply you have left and show a <b>Reorder</b> flag when you hit your threshold (or drop to ~3 days).</li>
+            <li><b>Restock</b> — top up the count whenever you buy more.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="info"></i><div>The supply estimate uses your schedule × dose, so keep those accurate for a reliable "days left" number.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 8 EXERCISE -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-8"><i data-feather="zap"></i>Health → Exercise</button></h2>
+        <div id="help-8" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">Set daily movement goals and log them, with a progress trend over time. Tap <span class="help-key">Load sample exercises</span> to begin.</p>
+          <ul>
+            <li><b>Two kinds of goal:</b> give a <b>daily target</b> (e.g. 30 min, 8000 steps) to log an amount, or <b>leave the target blank</b> for a simple done / not-done checkbox.</li>
+            <li><b>Log each day</b> — the day's % reflects how many exercises you completed; targeted ones count as done once you reach the number.</li>
+            <li><b>Progress Trend</b> switches between <b>Daily</b>, <b>Weekly</b>, <b>Monthly</b> and <b>Quarterly</b> views of your completion rate.</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 9 BACKUP & SETTINGS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-9"><i data-feather="save"></i>Backup, Restore &amp; Settings</button></h2>
+        <div id="help-9" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <p class="lead-line">Open Settings from the gear icon in the header.</p>
+          <ul>
+            <li><b>Export Backup (JSON)</b> — a complete copy of everything. Keep these somewhere safe and update them regularly.</li>
+            <li><b>Export Logs (CSV)</b> — a spreadsheet of your exercise, medicine and health logs for use elsewhere.</li>
+            <li><b>Restore</b> — import a JSON backup. This <b>replaces</b> all current data, so only use it to recover or move devices.</li>
+            <li><b>Dark mode</b> — toggle a darker theme; your choice is remembered.</li>
+            <li><b>Reset All Data</b> — wipes everything and restores the starter setup. This can't be undone.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="download"></i><div>Switching phones or browsers? Export a JSON backup on the old one and Restore it on the new one.</div></div>
+        </div></div>
+      </div>
+
+      <!-- 10 PRIVACY & TIPS -->
+      <div class="accordion-item">
+        <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help-10"><i data-feather="shield"></i>Privacy, Printing &amp; Tips</button></h2>
+        <div id="help-10" class="accordion-collapse collapse" data-bs-parent="#helpAcc"><div class="accordion-body">
+          <ul>
+            <li><b>Fully private &amp; offline.</b> All data lives only in this browser on this device — nothing is uploaded to any server.</li>
+            <li><b>Clearing browser data wipes it.</b> Because it's stored locally, clearing site data or browsing in private mode can erase it — so export a JSON backup now and then.</li>
+            <li><b>Print anywhere.</b> Dashboard, Planner, Tracker and Health each have a <b>Print</b> button for a clean paper copy or PDF — useful for doctor visits.</li>
+            <li><b>Not medical advice.</b> Targets, readings, medicines and reminders are personal-organiser tools. Always follow your doctor's and pharmacist's guidance.</li>
+          </ul>
+          <div class="help-tip"><i data-feather="zap"></i><div>Build the plan once, then your daily routine is just a few taps in the Tracker — the charts and streaks take care of themselves.</div></div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+    <button class="btn btn-brand d-flex align-items-center gap-1" data-bs-dismiss="modal" onclick="switchTab('library')"><i data-feather="play"></i>Start with Food Library</button>
+  </div>
+</div></div></div>
 
 <!-- FOOD MODAL -->
 <div class="modal fade" id="foodModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
@@ -525,6 +797,19 @@
 <script>
 function fi(){ try{ feather.replace({ 'stroke-width':2 }); }catch(e){} }
 
+/* ---------- Help / User Guide ---------- */
+let helpModal=null;
+function openHelp(){
+  if(!helpModal) helpModal=new bootstrap.Modal('#helpModal');
+  helpModal.show(); fi();
+}
+function helpJump(id){
+  const el=document.getElementById(id); if(!el) return;
+  bootstrap.Collapse.getOrCreateInstance(el).show();
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),220);
+}
+document.getElementById('helpModal').addEventListener('shown.bs.modal',fi);
+
 function printNow(label){
   const d=document.getElementById('trackDate') ? document.getElementById('trackDate').value : '';
   let sub=label;
@@ -631,6 +916,7 @@ async function loadState(){
   const hMeta = await idbGet('meta','height_cm'); heightCm = hMeta ? hMeta.value : null;
   medicines = await idbAll('medicines');
   exercises = await idbAll('exercises');
+  const dMeta = await idbGet('meta','dark'); document.body.classList.toggle('dark', !!(dMeta&&dMeta.value));
 }
 const saveSlots=()=>idbPut('meta',{key:'slots',value:slots});
 const saveCats =()=>idbPut('meta',{key:'cats',value:cats});
@@ -700,6 +986,7 @@ function switchTab(tab){
   if(tab==='planner') renderPlanner();
   if(tab==='tracker') renderTracker();
   if(tab==='health'){ renderHealth(); renderMeds(); renderExercise(); }
+  if(tab==='settings') renderSettings();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -1558,6 +1845,59 @@ async function delExercise(id){
   for(const l of logs) if(l.exId===id) await idbDel('exLog',l.key);
   exercises=await idbAll('exercises'); renderExercise();
 }
+
+/* ---------- Settings (backup / restore / theme / reset) ---------- */
+const ALL_STORES=['foods','mealPlan','tracking','meta','health','medicines','medLog','exercises','exLog'];
+function clearStore(name){ return new Promise((res,rej)=>{ const r=store(name,'readwrite').clear(); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); }); }
+function download(content,filename,type){
+  const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },150);
+}
+function csvEscape(v){ v=v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+
+function renderSettings(){
+  document.getElementById('darkToggle').checked = document.body.classList.contains('dark');
+}
+async function exportJSON(){
+  const data={ app:'NutritionPlanner', version:4, exported:new Date().toISOString(), stores:{} };
+  for(const s of ALL_STORES) data.stores[s]=await idbAll(s);
+  download(JSON.stringify(data,null,2),'nutrition-backup-'+todayISO()+'.json','application/json');
+}
+async function exportCSV(){
+  const header=['Date','Type','Item','Detail','Value'];
+  const body=[];
+  const exMap={}; (await idbAll('exercises')).forEach(x=>exMap[x.id]=x);
+  (await idbAll('exLog')).forEach(l=>{ const x=exMap[l.exId]; body.push([l.date,'Exercise',x?x.name:'#'+l.exId, x&&+x.target>0?('target '+x.target+' '+(x.unit||'')):'', l.done?(x&&+x.target>0?l.value:'done'):String(l.value||'')]); });
+  const medMap={}; (await idbAll('medicines')).forEach(m=>medMap[m.id]=m);
+  (await idbAll('medLog')).forEach(l=>{ const m=medMap[l.medId]; body.push([l.date,'Medicine',m?m.name:'#'+l.medId, l.slot||'', l.taken?'taken':'']); });
+  (await idbAll('health')).forEach(m=>{ (m.history||[]).forEach(r=>{ const v=m.type==='bp'?`${r.sys}/${r.dia}`:(m.type==='checkup'?(r.note||'done'):r.value); body.push([r.date,'Health',m.name,m.unit||'',v]); }); });
+  body.sort((a,b)=> a[0]<b[0]?1:(a[0]>b[0]?-1:0));
+  download([header,...body].map(r=>r.map(csvEscape).join(',')).join('\n'),'habit-logs-'+todayISO()+'.csv','text/csv');
+}
+async function importBackup(file){
+  let data; try{ data=JSON.parse(await file.text()); }catch(e){ await uiConfirm('That file is not valid JSON.','OK'); return; }
+  if(!data || !data.stores){ await uiConfirm('This does not look like a Nutrition Planner backup file.','OK'); return; }
+  if(!await uiConfirm('Importing will REPLACE all current data with this backup. Continue?','Import & replace')) return;
+  for(const s of ALL_STORES){ await clearStore(s); for(const it of (data.stores[s]||[])){ try{ await idbPut(s,it); }catch(e){} } }
+  await loadState(); switchTab('dashboard');
+}
+async function resetAll(){
+  if(!await uiConfirm('This permanently wipes ALL data — foods, plans, tracking, health, medicines and exercises. This cannot be undone. Continue?','Reset everything')) return;
+  for(const s of ALL_STORES) await clearStore(s);
+  slots=DEFAULT_SLOTS.slice(); cats=DEFAULT_CATS.slice(); await saveSlots(); await saveCats();
+  document.body.classList.remove('dark');
+  await loadState(); switchTab('dashboard');
+}
+document.getElementById('exportJsonBtn').onclick=exportJSON;
+document.getElementById('exportCsvBtn').onclick=exportCSV;
+document.getElementById('resetBtn').onclick=resetAll;
+document.getElementById('importFile').onchange=(e)=>{ const f=e.target.files[0]; if(f) importBackup(f); e.target.value=''; };
+document.getElementById('darkToggle').onchange=async()=>{
+  const on=document.getElementById('darkToggle').checked;
+  document.body.classList.toggle('dark', on);
+  await idbPut('meta',{key:'dark',value:on});
+};
 
 /* ---------- Init ---------- */
 (async()=>{
